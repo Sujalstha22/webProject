@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Cinema Website</title>
+  </head>
+  <body>
+    <div id="navbar">
+      <img src="Logo1.png" alt="Logo" />
+      <div class="navbar-items">
+        <a href="">Home</a>
+        <a href="">Movies</a>
+        <a href="">Ticket Rate</a>
+        <a href="">About Us</a>
+        <a href="">Contact Us</a>
+      </div>
+      <div class="navbar-button">
+        <button>Log in</button>
+        <button>Sign Up</button>
+      </div>
+    </div>
+
+    <section class="container">
+      <div class="slider-wrapper">
+        <div class="slider" id="slider">
+          <div class="slide">
+            <img src="poster1.jpg" alt="Avengers: Endgame" />
+          </div>
+          <div class="slide">
+            <img src="poster2.jpg" alt="Spider-Man: No Way Home" />
+          </div>
+          <div class="slide">
+            <img src="Logo.png" alt="The Batman" />
+          </div>
+        </div>
+
+        <div class="slider-arrows">
+          <button class="slider-arrow prev">&#10094;</button>
+          <button class="slider-arrow next">&#10095;</button>
+        </div>
+      </div>
+    </section>
+    <p
+      style="
+        text-align: center;
+        margin-top: 25px;
+        color: white;
+        font-size: larger;
+      "
+    >
+      Now Showing
+    </p>
+    <section class="container-1">
+      <div class="movie-container">
+        <div class="movie-img"></div>
+        <div class="info"></div>
+      </div>
+
+      <div class="movie-container">
+        <div class="movie-img"></div>
+        <div class="info"></div>
+      </div>
+
+      <div class="movie-container">
+        <div class="movie-img"></div>
+        <div class="info"></div>
+      </div>
+
+      <div class="movie-container">
+        <div class="movie-img"></div>
+        <div class="info"></div>
+      </div>
+    </section>
+    <script src="script.js"></script>
+  </body>
+</html>
