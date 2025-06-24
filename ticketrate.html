@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ticket Rates | Cinema</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div id="navbar">
+      <img src="Logo1.png" alt="Logo" />
+      <div class="navbar-items">
+        <a href="index.html">Home</a>
+        <a href="index.html#now-showing">Movies</a>
+        <a href="ticketrate.html">Ticket Rate</a>
+        <a href="index.html#about">About Us</a>
+        <a href="index.html#contact">Contact Us</a>
+        <a href="booking.html">Book Now</a>
+        <a href="admin.html">Admin</a>
+      </div>
+      <div class="navbar-button">
+        <button onclick="window.location.href='login.html'">Log in</button>
+        <button onclick="window.location.href='signup.html'">Sign Up</button>
+      </div>
+    </div>
+    <section class="static-banner">
+      <img src="ticket-banner.jpg" alt="Ticket Rate Banner" />
+    </section>
+    <!-- Ticket Rate Table Section -->
+    <section class="ticket-section">
+      <h2>Ticket Rates</h2>
+      <table class="ticket-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Morning Show</th>
+            <th>Day Show</th>
+            <th>Evening Show</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Regular (2D)</td>
+            <td>Rs. 250</td>
+            <td>Rs. 300</td>
+            <td>Rs. 350</td>
+          </tr>
+          <tr>
+            <td>Premium (2D)</td>
+            <td>Rs. 350</td>
+            <td>Rs. 400</td>
+            <td>Rs. 450</td>
+          </tr>
+          <tr>
+            <td>3D Regular</td>
+            <td>Rs. 400</td>
+            <td>Rs. 450</td>
+            <td>Rs. 500</td>
+          </tr>
+          <tr>
+            <td>3D Premium</td>
+            <td>Rs. 500</td>
+            <td>Rs. 550</td>
+            <td>Rs. 600</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 20px; color: #ccc">
+        * Prices are inclusive of VAT. 3D glasses cost an additional Rs. 50 if
+        required.
+      </p>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
