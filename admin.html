@@ -2,18 +2,87 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - SSR Cinema</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="form-box">
       <h2>Admin Dashboard</h2>
-      <ul style="list-style: none; padding: 0; color: white">
-        <li>📊 Total Bookings: 125</li>
-        <li>🎬 Movies Currently Showing: 3</li>
-        <li>👥 Registered Users: 87</li>
-        <li>🎟️ Tickets Sold Today: 36</li>
-      </ul>
+      <div id="statsContainer">
+        <ul style="list-style: none; padding: 0; color: white" id="statsList">
+          <li>📊 Total Bookings: <span id="totalBookings">Loading...</span></li>
+          <li>
+            🎬 Movies Currently Showing:
+            <span id="moviesShowing">Loading...</span>
+          </li>
+          <li>
+            💰 Total Revenue: Rs. <span id="totalRevenue">Loading...</span>
+          </li>
+          <li>
+            🎟️ Tickets Sold Today: <span id="ticketsToday">Loading...</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="admin-actions" style="margin-top: 20px">
+        <button onclick="refreshStats()" style="margin-right: 10px">
+          Refresh Stats
+        </button>
+        <button onclick="window.location.href='index.html'">
+          Back to Home
+        </button>
+      </div>
+
+      <div id="adminMessage" class="message"></div>
     </div>
+
+    <script>
+      // Load stats when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadStats();
+      });
+
+      // Load statistics from database
+      function loadStats() {
+        fetch("php/booking.php?action=get_stats")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              document.getElementById("totalBookings").textContent =
+                data.stats.total_bookings;
+              document.getElementById("moviesShowing").textContent =
+                data.stats.movies_showing;
+              document.getElementById("totalRevenue").textContent =
+                data.stats.total_revenue;
+              document.getElementById("ticketsToday").textContent =
+                data.stats.tickets_today;
+            } else {
+              document.getElementById("adminMessage").textContent =
+                "Error loading statistics";
+              document.getElementById("adminMessage").className =
+                "message error";
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading stats:", error);
+            document.getElementById("adminMessage").textContent =
+              "Error connecting to database";
+            document.getElementById("adminMessage").className = "message error";
+          });
+      }
+
+      // Refresh statistics
+      function refreshStats() {
+        document.getElementById("adminMessage").textContent =
+          "Refreshing statistics...";
+        document.getElementById("adminMessage").className = "message";
+        loadStats();
+        setTimeout(() => {
+          document.getElementById("adminMessage").textContent =
+            "Statistics refreshed!";
+          document.getElementById("adminMessage").className = "message success";
+        }, 500);
+      }
+    </script>
   </body>
 </html>

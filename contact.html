@@ -2,8 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SSR Cinema</title>
+    <title>Contact Us | SSR Cinema</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,7 +17,7 @@
       <img src="image/Logo1.png" alt="Logo" />
       <div class="navbar-items">
         <a href="index.html">Home</a>
-        <a href="#now-showing">Movies</a>
+        <a href="index.html#now-showing">Movies</a>
         <a href="ticketrate.html">Ticket Rate</a>
         <a href="about.html">About Us</a>
         <a href="contact.html">Contact Us</a>
@@ -36,48 +35,82 @@
       </div>
     </div>
 
-    <!-- Slider -->
-    <section class="container">
-      <div class="slider-wrapper">
-        <div class="slider" id="slider">
-          <div class="slide">
-            <img src="image/poster1.jpg" alt="Avengers: Endgame" />
-          </div>
-          <div class="slide">
-            <img src="image/poster2.jpg" alt="Spider-Man: No Way Home" />
-          </div>
-          <div class="slide">
-            <img src="image/poster3.jpg" alt="The Batman" />
+    <section class="static-banner">
+      <img src="image/ticket-banner.jpg" alt="Contact Us Banner" />
+    </section>
+
+    <!-- Contact Us Section -->
+    <section class="contact-section">
+      <h2>Contact SSR Cinema</h2>
+
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="contact-details">
+            <div class="contact-item">
+              <h4>📍 Find Us</h4>
+              <p>
+                SSR Cinema Complex<br />
+                City Square Mall<br />
+                Samakushi, Kathmandu<br />
+                <a
+                  href="https://www.google.com/maps/place/CITY+SQUARE+MALL/@27.7353909,85.3178887,17z/data=!3m1!4b1!4m6!3m5!1s0x39eb19f447a702e9:0x88f9c3894f46475c!8m2!3d27.7353909!4d85.3178887!16s%2Fg%2F11y1rm8xdr?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  style="color: #fa7e61; text-decoration: none"
+                  >📍 View on Google Maps</a
+                >
+              </p>
+            </div>
+
+            <div class="contact-item">
+              <h4>📞 Call Us</h4>
+              <p>
+                Box Office: <a href="tel:+1234567890">+1 (234) 567-8900</a
+                ><br />
+                Customer Service:
+                <a href="tel:+1234567891">+1 (234) 567-8901</a>
+              </p>
+            </div>
+
+            <div class="contact-item">
+              <h4>📧 Email</h4>
+              <p>
+                General Inquiries:
+                <a href="mailto:info@ssrcinema.com">info@ssrcinema.com</a><br />
+              </p>
+            </div>
+
+            <div class="contact-item">
+              <h4>🕒 When We're Open</h4>
+              <p>
+                <strong>Weekdays:</strong> 10 AM - 11 PM (perfect for after-work
+                movies)<br />
+                <strong>Weekends:</strong> 9 AM - Midnight (because weekend
+                movies hit different)<br />
+                <strong>Holidays:</strong> 9 AM - Midnight (we're here when you
+                need us most)
+              </p>
+            </div>
           </div>
         </div>
-        <div class="slider-arrows">
-          <button class="slider-arrow prev">&#10094;</button>
-          <button class="slider-arrow next">&#10095;</button>
+
+        <!-- Map Section -->
+        <div class="map-section">
+          <h3>Our Location</h3>
+          <div class="map-container">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.4234567890123!2d85.3178887!3d27.7353909!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19f447a702e9%3A0x88f9c3894f46475c!2sCITY%20SQUARE%20MALL!5e0!3m2!1sen!2snp!4v1640000000000!5m2!1sen!2snp"
+              width="100%"
+              height="300"
+              style="border: 0; border-radius: 10px"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            >
+            </iframe>
+          </div>
         </div>
       </div>
     </section>
-
-    <!-- Now Showing -->
-    <div class="section-header" id="now-showing">
-      <h2>Now Showing</h2>
-      <div class="loading-spinner" id="moviesLoading">Loading movies...</div>
-    </div>
-
-    <section class="container-1" id="moviesContainer">
-      <!-- Movies will be loaded dynamically from database -->
-    </section>
-
-    <!-- Movie Details Modal -->
-    <div id="movieModal" class="modal">
-      <div class="modal-content movie-modal-content">
-        <span class="close" onclick="closeModal('movieModal')">&times;</span>
-        <div id="movieDetails">
-          <!-- Movie details will be loaded here -->
-        </div>
-      </div>
-    </div>
-
-    <script src="script.js"></script>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
@@ -128,25 +161,31 @@
         <span class="close" onclick="closeModal('signupModal')">&times;</span>
         <h2>Sign Up</h2>
         <form id="signupForm">
-          <input
-            type="text"
-            id="signupFullName"
-            placeholder="Full Name"
-            required
-          />
-          <input
-            type="email"
-            id="signupEmail"
-            placeholder="Email Address"
-            required
-          />
-          <input
-            type="text"
-            id="signupUsername"
-            placeholder="Username (min 3 characters)"
-            required
-            autocomplete="username"
-          />
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupUsername"
+              placeholder="Username (min 3 characters)"
+              required
+              autocomplete="username"
+            />
+          </div>
           <div class="password-input-container">
             <input
               type="password"
@@ -207,10 +246,10 @@
           <h3>Quick Links</h3>
           <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="#now-showing">Now Showing</a></li>
+            <li><a href="index.html#now-showing">Now Showing</a></li>
             <li><a href="ticketrate.html">Ticket Rates</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
 
@@ -226,5 +265,7 @@
         &copy; 2025 SSR Cinema | Designed by Sujal Shrestha
       </div>
     </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>

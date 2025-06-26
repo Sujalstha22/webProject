@@ -2,8 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SSR Cinema</title>
+    <title>About Us | SSR Cinema</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,7 +17,7 @@
       <img src="image/Logo1.png" alt="Logo" />
       <div class="navbar-items">
         <a href="index.html">Home</a>
-        <a href="#now-showing">Movies</a>
+        <a href="index.html#now-showing">Movies</a>
         <a href="ticketrate.html">Ticket Rate</a>
         <a href="about.html">About Us</a>
         <a href="contact.html">Contact Us</a>
@@ -36,48 +35,43 @@
       </div>
     </div>
 
-    <!-- Slider -->
-    <section class="container">
-      <div class="slider-wrapper">
-        <div class="slider" id="slider">
-          <div class="slide">
-            <img src="image/poster1.jpg" alt="Avengers: Endgame" />
-          </div>
-          <div class="slide">
-            <img src="image/poster2.jpg" alt="Spider-Man: No Way Home" />
-          </div>
-          <div class="slide">
-            <img src="image/poster3.jpg" alt="The Batman" />
-          </div>
+    <section class="static-banner">
+      <img src="image/about-banner.jpg" alt="About Us Banner" />
+    </section>
+
+    <!-- About Us Section -->
+    <section class="about-section">
+      <h2>About SSR Cinema</h2>
+
+      <div class="about-content">
+        <div class="about-story">
+          <h3>How It All Started</h3>
+          <p>
+            Back in 2015, three friends had a simple dream - to bring the magic
+            of movies closer to home. What started as weekend conversations over
+            coffee turned into SSR Cinema. We were tired of driving hours to
+            catch the latest films, so we decided to build something special
+            right here in our community.
+          </p>
+          <p>
+            Today, we're proud to be your neighborhood cinema where every movie
+            night feels like an event. From the latest blockbusters to indie
+            gems, we've got something for everyone.
+          </p>
         </div>
-        <div class="slider-arrows">
-          <button class="slider-arrow prev">&#10094;</button>
-          <button class="slider-arrow next">&#10095;</button>
+
+        <div class="about-mission">
+          <h3>What We're All About</h3>
+          <p>
+            Honestly? We just love movies. And we love sharing that passion with
+            you. Whether you're here for a date night, family outing, or just
+            escaping after a long day, we want you to feel at home. Great
+            movies, comfy seats, and popcorn that actually tastes good - that's
+            our promise to you.
+          </p>
         </div>
       </div>
     </section>
-
-    <!-- Now Showing -->
-    <div class="section-header" id="now-showing">
-      <h2>Now Showing</h2>
-      <div class="loading-spinner" id="moviesLoading">Loading movies...</div>
-    </div>
-
-    <section class="container-1" id="moviesContainer">
-      <!-- Movies will be loaded dynamically from database -->
-    </section>
-
-    <!-- Movie Details Modal -->
-    <div id="movieModal" class="modal">
-      <div class="modal-content movie-modal-content">
-        <span class="close" onclick="closeModal('movieModal')">&times;</span>
-        <div id="movieDetails">
-          <!-- Movie details will be loaded here -->
-        </div>
-      </div>
-    </div>
-
-    <script src="script.js"></script>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
@@ -128,25 +122,31 @@
         <span class="close" onclick="closeModal('signupModal')">&times;</span>
         <h2>Sign Up</h2>
         <form id="signupForm">
-          <input
-            type="text"
-            id="signupFullName"
-            placeholder="Full Name"
-            required
-          />
-          <input
-            type="email"
-            id="signupEmail"
-            placeholder="Email Address"
-            required
-          />
-          <input
-            type="text"
-            id="signupUsername"
-            placeholder="Username (min 3 characters)"
-            required
-            autocomplete="username"
-          />
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupUsername"
+              placeholder="Username (min 3 characters)"
+              required
+              autocomplete="username"
+            />
+          </div>
           <div class="password-input-container">
             <input
               type="password"
@@ -207,10 +207,10 @@
           <h3>Quick Links</h3>
           <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="#now-showing">Now Showing</a></li>
+            <li><a href="index.html#now-showing">Now Showing</a></li>
             <li><a href="ticketrate.html">Ticket Rates</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
 
@@ -226,5 +226,7 @@
         &copy; 2025 SSR Cinema | Designed by Sujal Shrestha
       </div>
     </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>

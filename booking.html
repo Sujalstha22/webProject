@@ -2,25 +2,147 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Book Tickets</title>
+    <title>Book Tickets - SSR Cinema</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="form-box">
       <h2>Book Your Tickets</h2>
-      <form>
-        <input type="text" placeholder="Full Name" required />
-        <input type="email" placeholder="Email" required />
-        <select required>
+      <form id="bookingForm">
+        <input type="text" id="fullName" placeholder="Full Name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <select id="movieSelect" required>
           <option value="">Select Movie</option>
-          <option>Avengers: Endgame</option>
-          <option>Spider-Man: No Way Home</option>
-          <option>The Batman</option>
+          <!-- Movies will be loaded dynamically -->
         </select>
-        <input type="date" required />
-        <input type="number" placeholder="Number of Tickets" required />
+        <input type="date" id="bookingDate" required />
+        <input
+          type="number"
+          id="numberOfTickets"
+          placeholder="Number of Tickets"
+          min="1"
+          max="10"
+          required
+        />
+        <div class="ticket-info">
+          <p>Ticket Price: Rs. 500 per ticket</p>
+          <p id="totalAmount">Total Amount: Rs. 0</p>
+        </div>
         <button type="submit">Confirm Booking</button>
       </form>
+      <div id="bookingMessage" class="message"></div>
+      <div class="navigation-buttons">
+        <button onclick="window.location.href='index.html'">
+          Back to Home
+        </button>
+      </div>
     </div>
+
+    <script>
+      // Load movies when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadMovies();
+        setMinDate();
+
+        // Calculate total amount when tickets change
+        document
+          .getElementById("numberOfTickets")
+          .addEventListener("input", calculateTotal);
+      });
+
+      // Set minimum date to today
+      function setMinDate() {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("bookingDate").setAttribute("min", today);
+      }
+
+      // Calculate total amount
+      function calculateTotal() {
+        const tickets = document.getElementById("numberOfTickets").value;
+        const ticketPrice = 500;
+        const total = tickets * ticketPrice;
+        document.getElementById(
+          "totalAmount"
+        ).textContent = `Total Amount: Rs. ${total}`;
+      }
+
+      // Load movies from database
+      function loadMovies() {
+        fetch("php/booking.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: "action=get_movies",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const select = document.getElementById("movieSelect");
+              data.movies.forEach((movie) => {
+                const option = document.createElement("option");
+                option.value = movie.title;
+                option.textContent = movie.title;
+                select.appendChild(option);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading movies:", error);
+          });
+      }
+
+      // Handle booking form submission
+      document
+        .getElementById("bookingForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData();
+          formData.append("action", "create_booking");
+          formData.append(
+            "full_name",
+            document.getElementById("fullName").value
+          );
+          formData.append("email", document.getElementById("email").value);
+          formData.append(
+            "movie_title",
+            document.getElementById("movieSelect").value
+          );
+          formData.append(
+            "booking_date",
+            document.getElementById("bookingDate").value
+          );
+          formData.append(
+            "number_of_tickets",
+            document.getElementById("numberOfTickets").value
+          );
+
+          fetch("php/booking.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const messageDiv = document.getElementById("bookingMessage");
+              messageDiv.textContent = data.message;
+              messageDiv.className = data.success
+                ? "message success"
+                : "message error";
+
+              if (data.success) {
+                document.getElementById("bookingForm").reset();
+                calculateTotal();
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("bookingMessage").textContent =
+                "An error occurred. Please try again.";
+              document.getElementById("bookingMessage").className =
+                "message error";
+            });
+        });
+    </script>
   </body>
 </html>

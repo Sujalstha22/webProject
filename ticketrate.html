@@ -14,23 +14,28 @@
   <body>
     <!-- Navbar -->
     <div id="navbar">
-      <img src="Logo1.png" alt="Logo" />
+      <img src="image/Logo1.png" alt="Logo" />
       <div class="navbar-items">
         <a href="index.html">Home</a>
         <a href="index.html#now-showing">Movies</a>
         <a href="ticketrate.html">Ticket Rate</a>
-        <a href="index.html#about">About Us</a>
-        <a href="index.html#contact">Contact Us</a>
-        <a href="booking.html">Book Now</a>
-        <a href="admin.html">Admin</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
       </div>
-      <div class="navbar-button">
-        <button onclick="window.location.href='login.html'">Log in</button>
-        <button onclick="window.location.href='signup.html'">Sign Up</button>
+      <div class="navbar-button" id="authButtons">
+        <button onclick="openModal('loginModal')">Log in</button>
+        <button onclick="openModal('signupModal')">Sign Up</button>
+      </div>
+      <div class="navbar-user" id="userInfo" style="display: none">
+        <span id="welcomeMessage"></span>
+        <button onclick="logout()">Logout</button>
+        <button onclick="window.location.href='booking.html'">
+          Book Tickets
+        </button>
       </div>
     </div>
     <section class="static-banner">
-      <img src="ticket-banner.jpg" alt="Ticket Rate Banner" />
+      <img src="image/ticket-banner.jpg" alt="Ticket Rate Banner" />
     </section>
     <!-- Ticket Rate Table Section -->
     <section class="ticket-section">
