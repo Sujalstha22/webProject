@@ -10,31 +10,31 @@ define('DB_NAME', 'ssr_cinema');
 class Database {
     private static $connection = null;
     private static $pdo = null;
-    
+
     public static function connect() {
         if (self::$connection === null) {
             try {
                 // First connect without database to create it
                 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS);
-                
+
                 if ($mysqli->connect_error) {
                     throw new Exception("Connection failed: " . $mysqli->connect_error);
                 }
-                
+
                 // Create database if it doesn't exist
                 $mysqli->query("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "`");
                 $mysqli->close();
-                
+
                 // Now connect to the specific database
                 self::$connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-                
+
                 if (self::$connection->connect_error) {
                     throw new Exception("Database connection failed: " . self::$connection->connect_error);
                 }
-                
+
                 // Set charset
                 self::$connection->set_charset("utf8mb4");
-                
+
                 // Create PDO connection for modern operations
                 $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
                 self::$pdo = new PDO($dsn, DB_USER, DB_PASS, [
@@ -42,40 +42,40 @@ class Database {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]);
-                
+
             } catch (Exception $e) {
                 die("Database Error: " . $e->getMessage());
             }
         }
-        
+
         return self::$connection;
     }
-    
+
     public static function query($sql) {
         $conn = self::connect();
         return $conn->query($sql);
     }
-    
+
     public static function prepare($sql) {
         $conn = self::connect();
         return $conn->prepare($sql);
     }
-    
+
     public static function escape($string) {
         $conn = self::connect();
         return $conn->real_escape_string($string);
     }
-    
+
     public static function insertId() {
         $conn = self::connect();
         return $conn->insert_id;
     }
-    
+
     public static function affectedRows() {
         $conn = self::connect();
         return $conn->affected_rows;
     }
-    
+
     public static function getConnection() {
         return self::$pdo;
     }
