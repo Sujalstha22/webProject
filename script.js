@@ -857,9 +857,12 @@ function createMovieElement(movie) {
 
   movieContainer.innerHTML = `
     <div class="movie-img">
-      <img src="${movie.image_url}" alt="${
-    movie.title
-  }" onerror="this.src='/placeholder.svg?height=400&width=300'" />
+      <img 
+        src="image/${movie.image_url}" 
+        alt="${movie.title}" 
+        class="movie-poster"
+        onerror="this.src='/placeholder.svg?height=400&width=300'" 
+      />
       ${movie.is_featured ? '<div class="featured-badge">Featured</div>' : ""}
     </div>
     <div class="info">
