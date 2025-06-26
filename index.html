@@ -22,6 +22,7 @@
         <a href="ticketrate.html">Ticket Rate</a>
         <a href="about.html">About Us</a>
         <a href="contact.html">Contact Us</a>
+        <a href="admin.html" id="adminNavLink" style="display: none">Admin</a>
       </div>
       <div class="navbar-button" id="authButtons">
         <button onclick="openModal('loginModal')">Log in</button>
@@ -117,8 +118,20 @@
               👀
             </button>
           </div>
-          <button type="submit">Log In</button>
-          <p>
+          <button type="submit" id="loginSubmitBtn">Log In</button>
+          <button
+            type="button"
+            id="adminModeBtn"
+            onclick="toggleAdminMode()"
+            style="
+              background: linear-gradient(135deg, #fa7e61 0%, #e66a4d 100%);
+              margin-top: 10px;
+              font-weight: 600;
+            "
+          >
+            Switch to Admin Login
+          </button>
+          <p id="signupLink">
             Don't have an account?
             <a href="#" onclick="switchModal('loginModal','signupModal')"
               >Sign Up</a
@@ -222,8 +235,8 @@
             <li><a href="index.html">Home</a></li>
             <li><a href="#now-showing">Now Showing</a></li>
             <li><a href="ticketrate.html">Ticket Rates</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
 

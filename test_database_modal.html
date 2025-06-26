@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Test Modal - SSR Cinema</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .test-modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .test-modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            color: white;
+            font-family: "Montserrat Alternates", sans-serif;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .test-section {
+            background: #2c2c2c;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #fa7e61;
+        }
+        
+        .success {
+            color: #28a745;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #155724;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #721c24;
+        }
+        
+        .info {
+            color: #17a2b8;
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #0c5460;
+        }
+        
+        .test-button {
+            background: #fa7e61;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: 600;
+        }
+        
+        .test-button:hover {
+            background: #e66a4d;
+        }
+        
+        .test-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #fa7e61;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #333;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .config-display {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .loading {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-modal" id="databaseTestModal">
+        <div class="test-modal-content">
+            <span class="close-btn" onclick="closeTestModal()">&times;</span>
+            <h2>🔧 Database.php Test Modal</h2>
+            <p>Test and verify the database connection functionality</p>
+            
+            <div class="test-section">
+                <h3>📋 Database Configuration</h3>
+                <div id="configDisplay" class="config-display">
+                    <p>Loading configuration...</p>
+                </div>
+                <button class="test-button" onclick="loadConfig()">Reload Config</button>
+            </div>
+            
+            <div class="test-section">
+                <h3>🔌 Connection Tests</h3>
+                <button class="test-button" onclick="testBasicConnection()">Test Basic Connection</button>
+                <button class="test-button" onclick="testDatabaseExists()">Check Database Exists</button>
+                <button class="test-button" onclick="testTableStructure()">Test Table Structure</button>
+                <button class="test-button" onclick="testCRUDOperations()">Test CRUD Operations</button>
+                <div id="connectionResults" class="test-results" style="display: none;">
+                    <p>Test results will appear here...</p>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h3>👤 Authentication Tests</h3>
+                <button class="test-button" onclick="testAuthSystem()">Test Auth System</button>
+                <button class="test-button" onclick="testUserCreation()">Test User Creation</button>
+                <button class="test-button" onclick="testSessionManagement()">Test Sessions</button>
+                <div id="authResults" class="test-results" style="display: none;">
+                    <p>Authentication test results will appear here...</p>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h3>🎬 Movie System Tests</h3>
+                <button class="test-button" onclick="testMovieOperations()">Test Movie Operations</button>
+                <button class="test-button" onclick="testBookingSystem()">Test Booking System</button>
+                <div id="movieResults" class="test-results" style="display: none;">
+                    <p>Movie system test results will appear here...</p>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h3>🚀 Quick Actions</h3>
+                <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+                <button class="test-button" onclick="clearResults()">Clear Results</button>
+                <button class="test-button" onclick="exportResults()">Export Results</button>
+                <a href="database_setup.php" class="test-button" style="text-decoration: none; display: inline-block;">Database Setup</a>
+            </div>
+            
+            <div class="test-section">
+                <h3>📊 Overall Status</h3>
+                <div id="overallStatus" class="info">
+                    <p>Click "Run All Tests" to see overall system status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load database configuration
+        function loadConfig() {
+            const configDiv = document.getElementById('configDisplay');
+            configDiv.innerHTML = '<p class="loading">Loading configuration...</p>';
+            
+            fetch('test_database_api.php?action=get_config')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        configDiv.innerHTML = `
+                            <ul>
+                                <li><strong>Host:</strong> ${data.config.host}</li>
+                                <li><strong>Database:</strong> ${data.config.database}</li>
+                                <li><strong>Username:</strong> ${data.config.username}</li>
+                                <li><strong>Charset:</strong> ${data.config.charset}</li>
+                                <li><strong>Status:</strong> <span class="success">Connected</span></li>
+                            </ul>
+                        `;
+                    } else {
+                        configDiv.innerHTML = `<div class="error">Error: ${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    configDiv.innerHTML = `<div class="error">Connection Error: ${error.message}</div>`;
+                });
+        }
+        
+        // Test basic database connection
+        function testBasicConnection() {
+            showResults('connectionResults', '<p class="loading">Testing basic connection...</p>');
+            
+            fetch('test_database_api.php?action=test_connection')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ ${data.message}</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('connectionResults', result);
+                })
+                .catch(error => {
+                    showResults('connectionResults', `<div class="error">❌ Connection Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test if database exists
+        function testDatabaseExists() {
+            showResults('connectionResults', '<p class="loading">Checking database existence...</p>');
+            
+            fetch('test_database_api.php?action=check_database')
+                .then(response => response.json())
+                .then(data => {
+                    let result = data.success ? 
+                        `<div class="success">✅ Database exists</div>` :
+                        `<div class="error">❌ Database not found</div>`;
+                    
+                    if (data.tables) {
+                        result += `<div class="info">📋 Tables found: ${data.tables.join(', ')}</div>`;
+                    }
+                    
+                    showResults('connectionResults', result);
+                })
+                .catch(error => {
+                    showResults('connectionResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test table structure
+        function testTableStructure() {
+            showResults('connectionResults', '<p class="loading">Testing table structure...</p>');
+            
+            fetch('test_database_api.php?action=test_tables')
+                .then(response => response.json())
+                .then(data => {
+                    let result = '';
+                    if (data.success) {
+                        result = '<div class="success">✅ Table structure test passed</div>';
+                        if (data.details) {
+                            result += `<div class="info">📊 Details: ${JSON.stringify(data.details, null, 2)}</div>`;
+                        }
+                    } else {
+                        result = `<div class="error">❌ ${data.message}</div>`;
+                    }
+                    showResults('connectionResults', result);
+                })
+                .catch(error => {
+                    showResults('connectionResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test CRUD operations
+        function testCRUDOperations() {
+            showResults('connectionResults', '<p class="loading">Testing CRUD operations...</p>');
+            
+            fetch('test_database_api.php?action=test_crud')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ CRUD operations working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('connectionResults', result);
+                })
+                .catch(error => {
+                    showResults('connectionResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test authentication system
+        function testAuthSystem() {
+            showResults('authResults', '<p class="loading">Testing authentication system...</p>');
+            
+            fetch('test_database_api.php?action=test_auth')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ Authentication system working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('authResults', result);
+                })
+                .catch(error => {
+                    showResults('authResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test user creation
+        function testUserCreation() {
+            showResults('authResults', '<p class="loading">Testing user creation...</p>');
+            
+            fetch('test_database_api.php?action=test_user_creation')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ User creation working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('authResults', result);
+                })
+                .catch(error => {
+                    showResults('authResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test session management
+        function testSessionManagement() {
+            showResults('authResults', '<p class="loading">Testing session management...</p>');
+            
+            fetch('test_database_api.php?action=test_sessions')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ Session management working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('authResults', result);
+                })
+                .catch(error => {
+                    showResults('authResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test movie operations
+        function testMovieOperations() {
+            showResults('movieResults', '<p class="loading">Testing movie operations...</p>');
+            
+            fetch('test_database_api.php?action=test_movies')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ Movie operations working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('movieResults', result);
+                })
+                .catch(error => {
+                    showResults('movieResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Test booking system
+        function testBookingSystem() {
+            showResults('movieResults', '<p class="loading">Testing booking system...</p>');
+            
+            fetch('test_database_api.php?action=test_bookings')
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.success ? 
+                        `<div class="success">✅ Booking system working</div>` :
+                        `<div class="error">❌ ${data.message}</div>`;
+                    showResults('movieResults', result);
+                })
+                .catch(error => {
+                    showResults('movieResults', `<div class="error">❌ Error: ${error.message}</div>`);
+                });
+        }
+        
+        // Run all tests
+        function runAllTests() {
+            const tests = [
+                testBasicConnection,
+                testDatabaseExists,
+                testTableStructure,
+                testAuthSystem,
+                testMovieOperations
+            ];
+            
+            document.getElementById('overallStatus').innerHTML = '<p class="loading">Running all tests...</p>';
+            
+            let completed = 0;
+            tests.forEach((test, index) => {
+                setTimeout(() => {
+                    test();
+                    completed++;
+                    if (completed === tests.length) {
+                        setTimeout(() => {
+                            document.getElementById('overallStatus').innerHTML = 
+                                '<div class="success">✅ All tests completed! Check individual sections for results.</div>';
+                        }, 1000);
+                    }
+                }, index * 500);
+            });
+        }
+        
+        // Helper function to show results
+        function showResults(elementId, content) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = content;
+        }
+        
+        // Clear all results
+        function clearResults() {
+            const resultElements = ['connectionResults', 'authResults', 'movieResults'];
+            resultElements.forEach(id => {
+                const element = document.getElementById(id);
+                element.style.display = 'none';
+                element.innerHTML = '<p>Test results will appear here...</p>';
+            });
+            document.getElementById('overallStatus').innerHTML = 
+                '<p>Click "Run All Tests" to see overall system status</p>';
+        }
+        
+        // Export results
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                connection: document.getElementById('connectionResults').innerHTML,
+                auth: document.getElementById('authResults').innerHTML,
+                movies: document.getElementById('movieResults').innerHTML,
+                overall: document.getElementById('overallStatus').innerHTML
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'database_test_results.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Close modal
+        function closeTestModal() {
+            document.getElementById('databaseTestModal').style.display = 'none';
+        }
+        
+        // Load configuration on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+        });
+    </script>
+</body>
+</html>
