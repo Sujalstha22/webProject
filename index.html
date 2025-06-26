@@ -29,10 +29,17 @@
       </div>
       <div class="navbar-user" id="userInfo" style="display: none">
         <span id="welcomeMessage"></span>
-        <button onclick="logout()">Logout</button>
+        <button
+          id="adminButton"
+          onclick="window.location.href='admin.html'"
+          style="display: none"
+        >
+          Admin Dashboard
+        </button>
         <button onclick="window.location.href='booking.html'">
           Book Tickets
         </button>
+        <button onclick="logout()">Logout</button>
       </div>
     </div>
 
@@ -128,25 +135,31 @@
         <span class="close" onclick="closeModal('signupModal')">&times;</span>
         <h2>Sign Up</h2>
         <form id="signupForm">
-          <input
-            type="text"
-            id="signupFullName"
-            placeholder="Full Name"
-            required
-          />
-          <input
-            type="email"
-            id="signupEmail"
-            placeholder="Email Address"
-            required
-          />
-          <input
-            type="text"
-            id="signupUsername"
-            placeholder="Username (min 3 characters)"
-            required
-            autocomplete="username"
-          />
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="input-container">
+            <input
+              type="text"
+              id="signupUsername"
+              placeholder="Username (min 3 characters)"
+              required
+              autocomplete="username"
+            />
+          </div>
           <div class="password-input-container">
             <input
               type="password"

@@ -4,7 +4,7 @@
  * SSR Cinema Movie Management System
  */
 
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 class MovieManager {
     private $conn;

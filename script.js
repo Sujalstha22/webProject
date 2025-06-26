@@ -307,8 +307,23 @@ function handleSignup(e) {
     method: "POST",
     body: formData,
   })
-    .then((response) => response.json())
+    .then((response) => {
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.text().then((text) => {
+        console.log("Raw response:", text);
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error("JSON parse error:", e);
+          throw new Error("Invalid JSON response: " + text);
+        }
+      });
+    })
     .then((data) => {
+      console.log("Parsed data:", data);
       messageDiv.textContent = data.message;
       messageDiv.className = data.success ? "message success" : "message error";
 
@@ -324,8 +339,8 @@ function handleSignup(e) {
       }
     })
     .catch((error) => {
-      console.error("Error:", error);
-      messageDiv.textContent = "Connection error. Please try again.";
+      console.error("Signup Error:", error);
+      messageDiv.textContent = "Connection error: " + error.message;
       messageDiv.className = "message error";
     })
     .finally(() => {
@@ -340,18 +355,18 @@ function showUserInfo(user) {
   const authButtons = document.getElementById("authButtons");
   const userInfo = document.getElementById("userInfo");
   const welcomeMessage = document.getElementById("welcomeMessage");
+  const adminButton = document.getElementById("adminButton");
 
   if (authButtons && userInfo && welcomeMessage) {
     authButtons.style.display = "none";
     userInfo.style.display = "flex";
     welcomeMessage.textContent = `Welcome, ${user.full_name}!`;
 
-    // Add admin link if user is admin
-    if (user.is_admin) {
-      const adminButton = document.createElement("button");
-      adminButton.textContent = "Admin Dashboard";
-      adminButton.onclick = () => (window.location.href = "admin.html");
-      userInfo.insertBefore(adminButton, userInfo.lastElementChild);
+    // Show admin button if user is admin
+    if (user.is_admin && adminButton) {
+      adminButton.style.display = "inline-block";
+    } else if (adminButton) {
+      adminButton.style.display = "none";
     }
   }
 }
@@ -360,10 +375,16 @@ function showUserInfo(user) {
 function showAuthButtons() {
   const authButtons = document.getElementById("authButtons");
   const userInfo = document.getElementById("userInfo");
+  const adminButton = document.getElementById("adminButton");
 
   if (authButtons && userInfo) {
     authButtons.style.display = "flex";
     userInfo.style.display = "none";
+
+    // Hide admin button when logged out
+    if (adminButton) {
+      adminButton.style.display = "none";
+    }
   }
 }
 

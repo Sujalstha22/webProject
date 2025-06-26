@@ -3,18 +3,15 @@
   font-family: "Montserrat Alternates", sans-serif;
 }
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+  background-color: rgb(7, 5, 5);
 }
 /* Navbar styles */
 #navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  color: #2c3e50;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  background-color: #1a1a1a;
+  color: white;
 }
 #navbar img {
   width: 10%;
@@ -28,32 +25,15 @@ body {
 
 .navbar-items a {
   text-decoration: none;
-  color: #2c3e50;
+  color: aliceblue;
   margin: 20px 15px;
   padding: 10px 0px;
   font-size: 1.2rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  position: relative;
+  font-weight: 500;
 }
 
 .navbar-items a:hover {
-  color: #667eea;
-}
-
-.navbar-items a::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 5px;
-  left: 0;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transition: width 0.3s ease;
-}
-
-.navbar-items a:hover::after {
-  width: 100%;
+  color: rgb(250, 126, 97);
 }
 
 .navbar-button {
@@ -69,6 +49,10 @@ body {
   border: none;
   border-radius: 15px;
   cursor: pointer;
+}
+
+.navbar-button button:hover {
+  background-color: rgb(230, 106, 77);
 }
 
 /* User info styles */
@@ -575,10 +559,10 @@ body {
 /* Modal box */
 .modal-content {
   background-color: #1a1a1a;
-  margin: 10% auto;
-  padding: 2rem;
+  margin: 8% auto;
+  padding: 1.5rem;
   border-radius: 10px;
-  width: 350px;
+  width: 320px;
   color: white;
   font-family: "Montserrat Alternates", sans-serif;
   position: relative;
@@ -586,7 +570,8 @@ body {
 
 .modal-content h2 {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
 }
 
 .modal-content input,
@@ -802,15 +787,15 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .modal-content .input-container input {
   flex: 1;
-  padding: 12px 15px;
+  padding: 10px 12px;
   border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 14px;
   background-color: #f9f9f9;
   width: 100%;
   box-sizing: border-box;
@@ -828,15 +813,15 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .modal-content .password-input-container input {
   flex: 1;
-  padding: 12px 45px 12px 15px !important;
+  padding: 10px 40px 10px 12px !important;
   border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 14px;
   background-color: #f9f9f9;
   width: 100%;
   box-sizing: border-box;
@@ -879,11 +864,11 @@ body {
 
 /* Default button styling for forms */
 .modal-content form button[type="submit"] {
-  margin: 10px 0;
-  padding: 12px;
-  border-radius: 8px;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
   border: none;
-  font-size: 1rem;
+  font-size: 0.9rem;
   background-color: #fa7e61;
   color: white;
   cursor: pointer;
@@ -891,14 +876,19 @@ body {
 
 /* Responsive containers */
 @media (max-width: 768px) {
+  .modal-content {
+    width: 280px;
+    padding: 1.2rem;
+  }
+
   .modal-content .input-container input {
-    padding: 12px 15px;
-    font-size: 14px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .modal-content .password-input-container input {
-    padding: 12px 40px 12px 15px !important;
-    font-size: 14px;
+    padding: 8px 35px 8px 10px !important;
+    font-size: 13px;
   }
 
   .password-toggle {
