@@ -1,38 +1,83 @@
 <?php
 // SSR Cinema - Enhanced Database Configuration and Setup with Initialization
 
+// Database configuration
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', 'root');
+define('DB_NAME', 'ssr_cinema');
+
 class Database {
-    private $host = 'localhost';
-    private $user = 'root';
-    private $pass = 'root';
-    private $dbname = 'ssr_cinema';
-    public $conn;
-    private $pdo;
-
-    public function __construct() {
-        // Create mysqli connection
-        $this->conn = new mysqli($this->host, $this->user, $this->pass);
-        if ($this->conn->connect_error) {
-            die("Connection failed: " . $this->conn->connect_error);
+    private static $connection = null;
+    private static $pdo = null;
+    
+    public static function connect() {
+        if (self::$connection === null) {
+            try {
+                // First connect without database to create it
+                $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS);
+                
+                if ($mysqli->connect_error) {
+                    throw new Exception("Connection failed: " . $mysqli->connect_error);
+                }
+                
+                // Create database if it doesn't exist
+                $mysqli->query("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "`");
+                $mysqli->close();
+                
+                // Now connect to the specific database
+                self::$connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+                
+                if (self::$connection->connect_error) {
+                    throw new Exception("Database connection failed: " . self::$connection->connect_error);
+                }
+                
+                // Set charset
+                self::$connection->set_charset("utf8mb4");
+                
+                // Create PDO connection for modern operations
+                $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+                self::$pdo = new PDO($dsn, DB_USER, DB_PASS, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]);
+                
+            } catch (Exception $e) {
+                die("Database Error: " . $e->getMessage());
+            }
         }
-        $this->conn->query("CREATE DATABASE IF NOT EXISTS $this->dbname");
-        $this->conn->select_db($this->dbname);
         
-        // Also create PDO connection for modern operations
-        try {
-            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
-        } catch (PDOException $e) {
-            throw new Exception("PDO Connection failed: " . $e->getMessage());
-        }
+        return self::$connection;
     }
-
-    public function getConnection() {
-        return $this->pdo;
+    
+    public static function query($sql) {
+        $conn = self::connect();
+        return $conn->query($sql);
+    }
+    
+    public static function prepare($sql) {
+        $conn = self::connect();
+        return $conn->prepare($sql);
+    }
+    
+    public static function escape($string) {
+        $conn = self::connect();
+        return $conn->real_escape_string($string);
+    }
+    
+    public static function insertId() {
+        $conn = self::connect();
+        return $conn->insert_id;
+    }
+    
+    public static function affectedRows() {
+        $conn = self::connect();
+        return $conn->affected_rows;
+    }
+    
+    public static function getConnection() {
+        return self::$pdo;
     }
 }
 
@@ -280,6 +325,11 @@ class CinemaSetup {
     }
 }
 
+// Simple function to get database connection
+function getDB() {
+    return Database::connect();
+}
+
 // Enhanced initialization interface when accessed directly
 if (basename($_SERVER['PHP_SELF']) == 'database.php') {
     ?>
@@ -369,7 +419,7 @@ if (basename($_SERVER['PHP_SELF']) == 'database.php') {
             <?php
             try {
                 $database = new Database();
-                $setup = new CinemaSetup($database->conn, $database->getConnection());
+                $setup = new CinemaSetup($database->connect(), $database->getConnection());
                 
                 // Check if setup is requested
                 if (isset($_GET['action']) && $_GET['action'] === 'setup') {

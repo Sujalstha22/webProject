@@ -2,87 +2,289 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Admin Dashboard - SSR Cinema</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>SSR Cinema Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #121212, #1f1f1f);
+        color: white;
+        padding: 30px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+        color: #fa7e61;
+        text-shadow: 1px 1px #000;
+      }
+
+      .admin-tabs {
+        display: flex;
+        background: #2c2c2c;
+        border-radius: 10px 10px 0 0;
+        overflow: hidden;
+      }
+
+      .admin-tab {
+        flex: 1;
+        padding: 15px 20px;
+        background: #2c2c2c;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        text-align: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+        border-bottom: 3px solid transparent;
+      }
+
+      .admin-tab:hover {
+        background: #3a3a3a;
+        border-bottom: 3px solid #fa7e61;
+      }
+
+      .admin-tab.active {
+        background: #fa7e61;
+        color: white;
+        font-weight: bold;
+        border-bottom: 3px solid #ff4d29;
+      }
+
+      .admin-content {
+        background: #2c2c2c;
+        border-radius: 0 0 10px 10px;
+        padding: 30px;
+        margin-bottom: 40px;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        border-left: 6px solid #fa7e61;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #ffa488;
+      }
+
+      .stat-number {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #fa7e61;
+      }
+
+      .stat-label {
+        color: #ccc;
+        font-size: 1.1em;
+        margin-top: 5px;
+      }
+
+      .btn-group {
+        text-align: center;
+        margin-top: 30px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #fa7e61, #e66a4d);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(250, 126, 97, 0.4);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+        transform: scale(1.05);
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .stat-number.updated {
+        animation: pulse 0.5s ease;
+      }
+
+      @media (max-width: 768px) {
+        .admin-tabs {
+          flex-direction: column;
+        }
+      }
+    </style>
   </head>
+
   <body>
-    <div class="form-box">
-      <h2>Admin Dashboard</h2>
-      <div id="statsContainer">
-        <ul style="list-style: none; padding: 0; color: white" id="statsList">
-          <li>📊 Total Bookings: <span id="totalBookings">Loading...</span></li>
-          <li>
-            🎬 Movies Currently Showing:
-            <span id="moviesShowing">Loading...</span>
-          </li>
-          <li>
-            💰 Total Revenue: Rs. <span id="totalRevenue">Loading...</span>
-          </li>
-          <li>
-            🎟️ Tickets Sold Today: <span id="ticketsToday">Loading...</span>
-          </li>
-        </ul>
+    <h1>🎬 SSR Cinema Admin Dashboard</h1>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('dashboard')">
+        📊 Dashboard
+      </button>
+      <button class="admin-tab" onclick="switchTab('add-movie')">
+        ➕ Add Movie
+      </button>
+      <button class="admin-tab" onclick="switchTab('manage-movies')">
+        🎭 Manage Movies
+      </button>
+    </div>
+
+    <div class="admin-content">
+      <div id="dashboard" class="tab-panel active">
+        <h2 style="margin-bottom: 20px">📈 Cinema Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="stat-number" id="totalBookings">0</div>
+            <div class="stat-label">Total Bookings</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-film"></i></div>
+            <div class="stat-number" id="moviesShowing">0</div>
+            <div class="stat-label">Movies Showing</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+            <div class="stat-number" id="totalRevenue">0</div>
+            <div class="stat-label">Total Revenue (Rs.)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-number" id="ticketsToday">0</div>
+            <div class="stat-label">Tickets Sold Today</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-primary" onclick="refreshStats()">
+            🔄 Refresh Stats
+          </button>
+          <button
+            class="btn-secondary"
+            onclick="window.location.href='index.html'"
+          >
+            🏠 Back to Home
+          </button>
+        </div>
       </div>
 
-      <div class="admin-actions" style="margin-top: 20px">
-        <button onclick="refreshStats()" style="margin-right: 10px">
-          Refresh Stats
-        </button>
-        <button onclick="window.location.href='index.html'">
-          Back to Home
-        </button>
+      <!-- Placeholder Panels -->
+      <div id="add-movie" class="tab-panel">
+        <h2>Add Movie Panel (Coming Soon)</h2>
       </div>
-
-      <div id="adminMessage" class="message"></div>
+      <div id="manage-movies" class="tab-panel">
+        <h2>Manage Movies Panel (Coming Soon)</h2>
+      </div>
     </div>
 
     <script>
-      // Load stats when page loads
-      document.addEventListener("DOMContentLoaded", function () {
-        loadStats();
-      });
+      // Tab switching
+      function switchTab(tabId) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((tab) => tab.classList.remove("active"));
+        document
+          .querySelectorAll(".admin-tab")
+          .forEach((tab) => tab.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+        event.target.classList.add("active");
 
-      // Load statistics from database
+        if (tabId === "dashboard") loadStats();
+      }
+
+      // Load stats (simulate fetch)
       function loadStats() {
         fetch("php/booking.php?action=get_stats")
-          .then((response) => response.json())
+          .then((res) => res.json())
           .then((data) => {
             if (data.success) {
-              document.getElementById("totalBookings").textContent =
-                data.stats.total_bookings;
-              document.getElementById("moviesShowing").textContent =
-                data.stats.movies_showing;
-              document.getElementById("totalRevenue").textContent =
-                data.stats.total_revenue;
-              document.getElementById("ticketsToday").textContent =
-                data.stats.tickets_today;
-            } else {
-              document.getElementById("adminMessage").textContent =
-                "Error loading statistics";
-              document.getElementById("adminMessage").className =
-                "message error";
+              updateStat("totalBookings", data.stats.total_bookings);
+              updateStat("moviesShowing", data.stats.movies_showing);
+              updateStat("totalRevenue", data.stats.total_revenue);
+              updateStat("ticketsToday", data.stats.tickets_today);
             }
           })
-          .catch((error) => {
-            console.error("Error loading stats:", error);
-            document.getElementById("adminMessage").textContent =
-              "Error connecting to database";
-            document.getElementById("adminMessage").className = "message error";
+          .catch(() => {
+            alert("Failed to load stats.");
           });
       }
 
-      // Refresh statistics
-      function refreshStats() {
-        document.getElementById("adminMessage").textContent =
-          "Refreshing statistics...";
-        document.getElementById("adminMessage").className = "message";
-        loadStats();
-        setTimeout(() => {
-          document.getElementById("adminMessage").textContent =
-            "Statistics refreshed!";
-          document.getElementById("adminMessage").className = "message success";
-        }, 500);
+      function updateStat(id, value) {
+        const el = document.getElementById(id);
+        el.textContent = value;
+        el.classList.add("updated");
+        setTimeout(() => el.classList.remove("updated"), 500);
       }
+
+      function refreshStats() {
+        loadStats();
+      }
+
+      // Load stats on page load
+      document.addEventListener("DOMContentLoaded", loadStats);
     </script>
   </body>
 </html>
