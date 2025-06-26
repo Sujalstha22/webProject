@@ -45,7 +45,7 @@ class BookingManager {
         }
     }
 
-    public function createBooking($full_name, $email, $movie_title, $booking_date, $number_of_tickets) {
+    public function createBooking($full_name, $email, $movie_title, $booking_date, $number_of_tickets, $showtime = null, $movie_id = null, $ticket_price = 500) {
         // Validation
         if (empty($full_name) || empty($email) || empty($movie_title) || empty($booking_date) || empty($number_of_tickets)) {
             return ['success' => false, 'message' => 'All fields are required.'];
@@ -65,21 +65,25 @@ class BookingManager {
         }
 
         try {
-            // Get movie ID
-            $movie_id = $this->getMovieIdByTitle($movie_title);
+            // Get movie ID if not provided
+            if (!$movie_id) {
+                $movie_id = $this->getMovieIdByTitle($movie_title);
+            }
             
             // Calculate total amount
-            $ticket_price = 500;
             $total_amount = $number_of_tickets * $ticket_price;
 
+            // Create bookings table with showtime if it doesn't exist
+            $this->setupBookingsTableWithShowtime();
+
             // Insert booking
-            $stmt = $this->db->prepare("INSERT INTO bookings (full_name, email, movie_id, movie_title, booking_date, number_of_tickets, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            
+            $stmt = $this->db->prepare("INSERT INTO bookings (full_name, email, movie_id, movie_title, booking_date, number_of_tickets, total_amount, showtime, ticket_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
             if (!$stmt) {
                 return ['success' => false, 'message' => 'Database error occurred.'];
             }
-            
-            $stmt->bind_param("ssissid", $full_name, $email, $movie_id, $movie_title, $booking_date, $number_of_tickets, $total_amount);
+        
+            $stmt->bind_param("ssissidsd", $full_name, $email, $movie_id, $movie_title, $booking_date, $number_of_tickets, $total_amount, $showtime, $ticket_price);
 
             if ($stmt->execute()) {
                 $booking_id = $this->db->insert_id;
@@ -88,15 +92,37 @@ class BookingManager {
                     'success' => true, 
                     'message' => 'Booking confirmed successfully!',
                     'booking_id' => $booking_id,
-                    'total_amount' => $total_amount
+                    'total_amount' => $total_amount,
+                    'showtime' => $showtime,
+                    'ticket_price' => $ticket_price
                 ];
             } else {
                 $stmt->close();
                 return ['success' => false, 'message' => 'Booking failed. Please try again.'];
             }
-            
+        
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+        }
+    }
+
+    private function setupBookingsTableWithShowtime() {
+        try {
+            // Check if showtime column exists
+            $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'showtime'");
+            if ($result->num_rows == 0) {
+                // Add showtime column
+                $this->db->query("ALTER TABLE bookings ADD COLUMN showtime VARCHAR(20) DEFAULT NULL");
+            }
+        
+            // Check if ticket_price column exists
+            $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'ticket_price'");
+            if ($result->num_rows == 0) {
+                // Add ticket_price column
+                $this->db->query("ALTER TABLE bookings ADD COLUMN ticket_price DECIMAL(10,2) DEFAULT 500.00");
+            }
+        } catch (Exception $e) {
+            error_log("Bookings table update failed: " . $e->getMessage());
         }
     }
 
@@ -190,7 +216,10 @@ try {
                     $_POST['email'] ?? '',
                     $_POST['movie_title'] ?? '',
                     $_POST['booking_date'] ?? '',
-                    $_POST['number_of_tickets'] ?? 0
+                    $_POST['number_of_tickets'] ?? 0,
+                    $_POST['showtime'] ?? null,
+                    $_POST['movie_id'] ?? null,
+                    $_POST['ticket_price'] ?? 500
                 );
                 echo json_encode($result);
                 break;

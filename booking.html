@@ -2,89 +2,827 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Tickets - SSR Cinema</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      .booking-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .form-box {
+        background-color: #1a1a1a;
+        padding: 2rem;
+        margin: 20px auto;
+        color: white;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        max-width: 600px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid #333;
+      }
+
+      .form-box h2 {
+        text-align: center;
+        color: #fa7e61;
+        margin-bottom: 25px;
+        font-size: 2rem;
+      }
+
+      .form-box input,
+      .form-box select,
+      .form-box button {
+        margin: 12px 0;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 2px solid #444;
+        width: 100%;
+        font-size: 15px;
+        background: #2c2c2c;
+        color: white;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .form-box input:focus,
+      .form-box select:focus {
+        outline: none;
+        border-color: #fa7e61;
+        background: #333;
+        box-shadow: 0 0 10px rgba(250, 126, 97, 0.3);
+      }
+
+      .form-box button {
+        background: linear-gradient(135deg, #fa7e61, #e66a4d);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 16px;
+      }
+
+      .form-box button:hover {
+        background: linear-gradient(135deg, #e66a4d, #d55a3a);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(250, 126, 97, 0.4);
+      }
+
+      .form-box button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .showtime-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: #2c2c2c;
+        border-radius: 12px;
+        border-left: 4px solid #fa7e61;
+      }
+
+      .showtime-label {
+        color: #fa7e61;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .showtime-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 15px;
+        margin: 15px 0;
+      }
+
+      .showtime-btn {
+        background: #1a1a1a;
+        color: white;
+        border: 2px solid #444;
+        padding: 15px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .showtime-btn:hover {
+        border-color: #fa7e61;
+        background: rgba(250, 126, 97, 0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(250, 126, 97, 0.2);
+      }
+
+      .showtime-btn.selected {
+        background: #fa7e61;
+        border-color: #fa7e61;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(250, 126, 97, 0.4);
+      }
+
+      .showtime-btn.selected:hover {
+        background: #e66a4d;
+        border-color: #e66a4d;
+      }
+
+      .showtime-required {
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        margin-top: 8px;
+        display: none;
+        text-align: center;
+      }
+
+      .ticket {
+        display: none;
+        margin: 30px auto;
+        max-width: 700px;
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        border: 2px dashed #fa7e61;
+        border-radius: 20px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        color: white;
+        font-family: "Montserrat Alternates", sans-serif;
+      }
+
+      .ticket-header {
+        background: linear-gradient(135deg, #fa7e61, #e66a4d);
+        padding: 25px;
+        text-align: center;
+        color: white;
+      }
+
+      .ticket-header h2 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 600;
+      }
+
+      .ticket-header p {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .ticket-body {
+        padding: 30px;
+      }
+
+      .ticket-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #444;
+      }
+
+      .ticket-row:last-child {
+        border-bottom: none;
+        margin-top: 15px;
+        padding-top: 25px;
+      }
+
+      .ticket-label {
+        font-weight: 600;
+        color: #fa7e61;
+        font-size: 1rem;
+      }
+
+      .ticket-value {
+        font-weight: 500;
+        color: white;
+        text-align: right;
+        font-size: 1rem;
+      }
+
+      .ticket-movie-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #fa7e61;
+      }
+
+      .ticket-total {
+        background: rgba(250, 126, 97, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+      }
+
+      .ticket-total .ticket-label,
+      .ticket-total .ticket-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+      }
+
+      .ticket-footer {
+        background: #2c2c2c;
+        padding: 25px;
+        text-align: center;
+        border-top: 1px solid #444;
+      }
+
+      .ticket-footer p {
+        margin: 8px 0;
+        color: #ccc;
+        font-size: 0.95rem;
+      }
+
+      .ticket-qr {
+        width: 90px;
+        height: 90px;
+        background: white;
+        margin: 20px auto;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-weight: bold;
+        font-size: 0.85rem;
+      }
+
+      .message {
+        margin: 20px 0;
+        padding: 15px 20px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 500;
+        border-left: 4px solid;
+      }
+
+      .message.success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border-color: #28a745;
+      }
+
+      .message.error {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-color: #dc3545;
+      }
+
+      .ticket-info {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 18px;
+        border-radius: 10px;
+        margin: 20px 0;
+        color: white;
+        border-left: 4px solid #fa7e61;
+      }
+
+      .ticket-info p {
+        margin: 8px 0;
+        font-size: 1rem;
+      }
+
+      .navigation-buttons {
+        margin-top: 40px;
+        text-align: center;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .navigation-buttons button {
+        background: linear-gradient(135deg, #fa7e61, #e66a4d);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 15px;
+        min-width: 140px;
+      }
+
+      .navigation-buttons button:hover {
+        background: linear-gradient(135deg, #e66a4d, #d55a3a);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(250, 126, 97, 0.4);
+      }
+
+      .movie-details {
+        background: #2c2c2c;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+        border-left: 4px solid #fa7e61;
+      }
+
+      .movie-details h4 {
+        color: #fa7e61;
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+      }
+
+      .movie-details p {
+        margin: 8px 0;
+        color: #ccc;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 25px;
+        gap: 15px;
+      }
+
+      .step {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #444;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .step.active {
+        background: #fa7e61;
+        box-shadow: 0 0 15px rgba(250, 126, 97, 0.5);
+      }
+
+      .step.completed {
+        background: #28a745;
+      }
+
+      /* Enhanced Responsive Design */
+      @media (max-width: 768px) {
+        .booking-container {
+          padding: 15px 10px;
+        }
+
+        .form-box {
+          margin: 15px auto;
+          padding: 1.5rem;
+          max-width: 95%;
+        }
+
+        .form-box h2 {
+          font-size: 1.6rem;
+          margin-bottom: 20px;
+        }
+
+        .form-box input,
+        .form-box select,
+        .form-box button {
+          padding: 12px 14px;
+          font-size: 14px;
+          margin: 10px 0;
+        }
+
+        .showtime-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .showtime-btn {
+          padding: 12px 8px;
+          font-size: 13px;
+          min-height: 45px;
+        }
+
+        .ticket {
+          margin: 20px 10px;
+          max-width: 95%;
+        }
+
+        .ticket-header {
+          padding: 20px;
+        }
+
+        .ticket-header h2 {
+          font-size: 1.6rem;
+        }
+
+        .ticket-body {
+          padding: 20px;
+        }
+
+        .ticket-row {
+          padding: 12px 0;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+        }
+
+        .ticket-value {
+          text-align: left;
+        }
+
+        .ticket-movie-title {
+          font-size: 1.2rem;
+        }
+
+        .navigation-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .navigation-buttons button {
+          width: 100%;
+          max-width: 250px;
+        }
+
+        .step-indicator {
+          gap: 10px;
+        }
+
+        .step {
+          width: 30px;
+          height: 30px;
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .booking-container {
+          padding: 10px 5px;
+        }
+
+        .form-box {
+          padding: 1.2rem;
+        }
+
+        .form-box h2 {
+          font-size: 1.4rem;
+        }
+
+        .form-box input,
+        .form-box select,
+        .form-box button {
+          padding: 10px 12px;
+          font-size: 13px;
+        }
+
+        .showtime-grid {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .showtime-btn {
+          padding: 10px;
+          font-size: 12px;
+          min-height: 40px;
+        }
+
+        .ticket-header h2 {
+          font-size: 1.4rem;
+        }
+
+        .ticket-header p {
+          font-size: 1rem;
+        }
+
+        .ticket-body {
+          padding: 15px;
+        }
+
+        .ticket-label,
+        .ticket-value {
+          font-size: 0.9rem;
+        }
+
+        .ticket-movie-title {
+          font-size: 1.1rem;
+        }
+
+        .ticket-qr {
+          width: 70px;
+          height: 70px;
+        }
+
+        .navigation-buttons button {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .form-box {
+          padding: 1rem;
+        }
+
+        .form-box h2 {
+          font-size: 1.2rem;
+        }
+
+        .showtime-section {
+          padding: 15px;
+        }
+
+        .ticket-header {
+          padding: 15px;
+        }
+
+        .ticket-body {
+          padding: 12px;
+        }
+      }
+
+      /* Landscape orientation adjustments */
+      @media (max-height: 500px) and (orientation: landscape) {
+        .form-box {
+          margin: 10px auto;
+        }
+
+        .ticket {
+          margin: 15px auto;
+        }
+
+        .step-indicator {
+          margin-bottom: 15px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="form-box">
-      <h2>Book Your Tickets</h2>
-      <form id="bookingForm">
-        <input type="text" id="fullName" placeholder="Full Name" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <select id="movieSelect" required>
-          <option value="">Select Movie</option>
-          <!-- Movies will be loaded dynamically -->
-        </select>
-        <input type="date" id="bookingDate" required />
-        <input
-          type="number"
-          id="numberOfTickets"
-          placeholder="Number of Tickets"
-          min="1"
-          max="10"
-          required
-        />
-        <div class="ticket-info">
-          <p>Ticket Price: Rs. 500 per ticket</p>
-          <p id="totalAmount">Total Amount: Rs. 0</p>
+    <div class="booking-container">
+      <div class="form-box">
+        <h2>🎬 Book Your Tickets</h2>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+          <div class="step active" id="step1">1</div>
+          <div class="step" id="step2">2</div>
+          <div class="step" id="step3">3</div>
         </div>
-        <button type="submit">Confirm Booking</button>
-      </form>
-      <div id="bookingMessage" class="message"></div>
+
+        <form id="bookingForm">
+          <!-- Step 1: Personal Information -->
+          <div id="personalInfo">
+            <input type="text" id="fullName" placeholder="Full Name" required />
+            <input
+              type="email"
+              id="email"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+
+          <!-- Step 2: Movie Selection -->
+          <select id="movieSelect" required>
+            <option value="">Select Movie</option>
+          </select>
+
+          <div
+            id="movieDetailsDisplay"
+            class="movie-details"
+            style="display: none"
+          >
+            <h4>Movie Details</h4>
+            <div id="movieInfo"></div>
+          </div>
+
+          <!-- Step 3: Showtime Selection -->
+          <div
+            id="showtimeSection"
+            class="showtime-section"
+            style="display: none"
+          >
+            <label class="showtime-label">🕐 Select Show Time:</label>
+            <div id="showtimeGrid" class="showtime-grid"></div>
+            <div class="showtime-required" id="showtimeRequired">
+              Please select a show time
+            </div>
+            <input type="hidden" id="selectedShowtime" />
+          </div>
+
+          <!-- Step 4: Date and Tickets -->
+          <input type="date" id="bookingDate" required />
+
+          <input
+            type="number"
+            id="numberOfTickets"
+            placeholder="Number of Tickets (1-10)"
+            min="1"
+            max="10"
+            value="1"
+            required
+          />
+
+          <div class="ticket-info">
+            <p id="ticketPriceInfo">Ticket Price: Rs. 500 per ticket</p>
+            <p id="totalAmount">Total Amount: Rs. 0</p>
+          </div>
+
+          <button type="submit" id="bookingSubmitBtn">
+            🎫 Confirm Booking
+          </button>
+        </form>
+
+        <div id="bookingMessage" class="message"></div>
+      </div>
+
+      <!-- Enhanced Ticket Display -->
+      <div id="ticket" class="ticket">
+        <div class="ticket-header">
+          <h2>🎬 SSR CINEMA</h2>
+          <p>Your Movie Ticket</p>
+        </div>
+
+        <div class="ticket-body">
+          <div class="ticket-row">
+            <span class="ticket-label">Movie:</span>
+            <span
+              class="ticket-value ticket-movie-title"
+              id="ticketMovie"
+            ></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Customer:</span>
+            <span class="ticket-value" id="ticketName"></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Email:</span>
+            <span class="ticket-value" id="ticketEmail"></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Show Date:</span>
+            <span class="ticket-value" id="ticketDate"></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Show Time:</span>
+            <span class="ticket-value" id="ticketShowtime"></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Number of Tickets:</span>
+            <span class="ticket-value" id="ticketQuantity"></span>
+          </div>
+
+          <div class="ticket-row">
+            <span class="ticket-label">Ticket Price:</span>
+            <span class="ticket-value" id="ticketPrice"></span>
+          </div>
+
+          <div class="ticket-total">
+            <div class="ticket-row">
+              <span class="ticket-label">Total Amount:</span>
+              <span class="ticket-value" id="ticketTotal"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket-footer">
+          <div class="ticket-qr">QR CODE</div>
+          <p><strong>Booking ID:</strong> <span id="ticketBookingId"></span></p>
+          <p>Please arrive 15 minutes before showtime</p>
+          <p>Present this ticket at the entrance</p>
+          <p style="color: #fa7e61; font-weight: 600">
+            Thank you for choosing SSR Cinema!
+          </p>
+        </div>
+      </div>
+
       <div class="navigation-buttons">
         <button onclick="window.location.href='index.html'">
-          Back to Home
+          🏠 Back to Home
+        </button>
+        <button onclick="printTicket()" id="printBtn" style="display: none">
+          🖨️ Print Ticket
+        </button>
+        <button
+          onclick="bookAnother()"
+          id="bookAnotherBtn"
+          style="display: none"
+        >
+          🎬 Book Another
         </button>
       </div>
     </div>
 
     <script>
-      // Load movies when page loads
+      let selectedMovie = null;
+      let selectedShowtime = null;
+
       document.addEventListener("DOMContentLoaded", function () {
         loadMovies();
         setMinDate();
+        setupEventListeners();
+      });
 
-        // Calculate total amount when tickets change
+      function setupEventListeners() {
         document
           .getElementById("numberOfTickets")
           .addEventListener("input", calculateTotal);
-      });
+        document
+          .getElementById("movieSelect")
+          .addEventListener("change", handleMovieSelection);
+        document
+          .getElementById("bookingForm")
+          .addEventListener("submit", handleBookingSubmission);
 
-      // Set minimum date to today
+        // Update steps as user progresses
+        document
+          .getElementById("fullName")
+          .addEventListener("input", updateSteps);
+        document.getElementById("email").addEventListener("input", updateSteps);
+        document
+          .getElementById("movieSelect")
+          .addEventListener("change", updateSteps);
+      }
+
+      function updateSteps() {
+        const step1 = document.getElementById("step1");
+        const step2 = document.getElementById("step2");
+        const step3 = document.getElementById("step3");
+
+        const fullName = document.getElementById("fullName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const movieSelected = document.getElementById("movieSelect").value;
+
+        // Step 1: Personal info
+        if (fullName && email) {
+          step1.classList.add("completed");
+          step1.classList.remove("active");
+          step2.classList.add("active");
+        } else {
+          step1.classList.add("active");
+          step1.classList.remove("completed");
+          step2.classList.remove("active", "completed");
+          step3.classList.remove("active", "completed");
+        }
+
+        // Step 2: Movie selection
+        if (movieSelected && fullName && email) {
+          step2.classList.add("completed");
+          step2.classList.remove("active");
+          step3.classList.add("active");
+        }
+
+        // Step 3: Showtime selection
+        if (selectedShowtime && movieSelected && fullName && email) {
+          step3.classList.add("completed");
+          step3.classList.remove("active");
+        }
+      }
+
       function setMinDate() {
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("bookingDate").setAttribute("min", today);
+        document.getElementById("bookingDate").value = today;
       }
 
-      // Calculate total amount
       function calculateTotal() {
-        const tickets = document.getElementById("numberOfTickets").value;
-        const ticketPrice = 500;
+        const tickets = document.getElementById("numberOfTickets").value || 1;
+        const ticketPrice = selectedMovie ? selectedMovie.ticket_price : 500;
         const total = tickets * ticketPrice;
+
+        document.getElementById(
+          "ticketPriceInfo"
+        ).textContent = `Ticket Price: Rs. ${ticketPrice} per ticket`;
         document.getElementById(
           "totalAmount"
         ).textContent = `Total Amount: Rs. ${total}`;
       }
 
-      // Load movies from database
       function loadMovies() {
-        fetch("php/booking.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: "action=get_movies",
-        })
+        console.log("Loading movies...");
+        fetch("php/movies.php?action=now_showing")
           .then((response) => response.json())
           .then((data) => {
-            if (data.success) {
+            console.log("Movies loaded:", data);
+            if (data.success && data.movies) {
               const select = document.getElementById("movieSelect");
               data.movies.forEach((movie) => {
                 const option = document.createElement("option");
-                option.value = movie.title;
+                option.value = movie.id;
                 option.textContent = movie.title;
+                option.dataset.movie = JSON.stringify(movie);
                 select.appendChild(option);
               });
+            } else {
+              console.error("Failed to load movies:", data.message);
             }
           })
           .catch((error) => {
@@ -92,57 +830,308 @@
           });
       }
 
-      // Handle booking form submission
-      document
-        .getElementById("bookingForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
+      function handleMovieSelection(e) {
+        const selectedOption = e.target.selectedOptions[0];
+        if (selectedOption && selectedOption.dataset.movie) {
+          selectedMovie = JSON.parse(selectedOption.dataset.movie);
+          console.log("Movie selected:", selectedMovie);
+          displayMovieDetails(selectedMovie);
+          displayShowtimes(selectedMovie.show_times || []);
+          calculateTotal();
+          updateSteps();
+        } else {
+          hideMovieDetails();
+        }
+      }
 
-          const formData = new FormData();
-          formData.append("action", "create_booking");
-          formData.append(
-            "full_name",
-            document.getElementById("fullName").value
-          );
-          formData.append("email", document.getElementById("email").value);
-          formData.append(
-            "movie_title",
-            document.getElementById("movieSelect").value
-          );
-          formData.append(
-            "booking_date",
-            document.getElementById("bookingDate").value
-          );
-          formData.append(
-            "number_of_tickets",
-            document.getElementById("numberOfTickets").value
-          );
+      function displayMovieDetails(movie) {
+        const detailsDiv = document.getElementById("movieDetailsDisplay");
+        const infoDiv = document.getElementById("movieInfo");
 
-          fetch("php/booking.php", {
-            method: "POST",
-            body: formData,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              const messageDiv = document.getElementById("bookingMessage");
-              messageDiv.textContent = data.message;
-              messageDiv.className = data.success
-                ? "message success"
-                : "message error";
+        infoDiv.innerHTML = `
+          <p><strong>Genre:</strong> ${movie.genre}</p>
+          <p><strong>Duration:</strong> ${
+            movie.formatted_duration || movie.duration + " min"
+          }</p>
+          <p><strong>Rating:</strong> ${movie.rating}</p>
+          <p><strong>Language:</strong> ${movie.language}</p>
+          <p><strong>Price:</strong> Rs. ${movie.ticket_price}</p>
+        `;
 
-              if (data.success) {
-                document.getElementById("bookingForm").reset();
-                calculateTotal();
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              document.getElementById("bookingMessage").textContent =
-                "An error occurred. Please try again.";
-              document.getElementById("bookingMessage").className =
-                "message error";
-            });
+        detailsDiv.style.display = "block";
+      }
+
+      function displayShowtimes(showtimes) {
+        console.log("Displaying showtimes:", showtimes);
+        const showtimeSection = document.getElementById("showtimeSection");
+        const showtimeGrid = document.getElementById("showtimeGrid");
+
+        if (showtimes && showtimes.length > 0) {
+          showtimeGrid.innerHTML = "";
+          showtimes.forEach((time, index) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "showtime-btn";
+            btn.textContent = time;
+            btn.onclick = () => selectShowtime(time, btn);
+            btn.setAttribute("data-time", time);
+            showtimeGrid.appendChild(btn);
+
+            console.log(`Added showtime button: ${time}`);
+          });
+          showtimeSection.style.display = "block";
+
+          // Reset selection
+          selectedShowtime = null;
+          document.getElementById("selectedShowtime").value = "";
+          document.getElementById("showtimeRequired").style.display = "none";
+        } else {
+          showtimeSection.style.display = "none";
+          console.log("No showtimes available");
+        }
+      }
+
+      function selectShowtime(time, btnElement) {
+        console.log("Showtime selected:", time);
+
+        // Remove selection from all buttons
+        document.querySelectorAll(".showtime-btn").forEach((btn) => {
+          btn.classList.remove("selected");
         });
+
+        // Select current button
+        btnElement.classList.add("selected");
+        selectedShowtime = time;
+        document.getElementById("selectedShowtime").value = time;
+        document.getElementById("showtimeRequired").style.display = "none";
+
+        updateSteps();
+
+        console.log("Selected showtime set to:", selectedShowtime);
+      }
+
+      function hideMovieDetails() {
+        document.getElementById("movieDetailsDisplay").style.display = "none";
+        document.getElementById("showtimeSection").style.display = "none";
+        selectedMovie = null;
+        selectedShowtime = null;
+        document.getElementById("selectedShowtime").value = "";
+      }
+
+      function handleBookingSubmission(e) {
+        e.preventDefault();
+
+        const fullName = document.getElementById("fullName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const movieId = document.getElementById("movieSelect").value;
+        const bookingDate = document.getElementById("bookingDate").value;
+        const numberOfTickets =
+          document.getElementById("numberOfTickets").value;
+        const submitBtn = document.getElementById("bookingSubmitBtn");
+        const messageDiv = document.getElementById("bookingMessage");
+
+        // Clear previous messages
+        messageDiv.textContent = "";
+        messageDiv.className = "message";
+
+        // Validation
+        if (!selectedMovie) {
+          messageDiv.textContent = "Please select a movie.";
+          messageDiv.className = "message error";
+          return;
+        }
+
+        if (!selectedShowtime) {
+          messageDiv.textContent = "Please select a show time.";
+          messageDiv.className = "message error";
+          document.getElementById("showtimeRequired").style.display = "block";
+          document
+            .getElementById("showtimeSection")
+            .scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+
+        console.log("Submitting booking:", {
+          fullName,
+          email,
+          movieId,
+          bookingDate,
+          numberOfTickets,
+          selectedShowtime,
+        });
+
+        submitBtn.textContent = "Processing Booking...";
+        submitBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append("action", "create_booking");
+        formData.append("full_name", fullName);
+        formData.append("email", email);
+        formData.append("movie_id", movieId);
+        formData.append("movie_title", selectedMovie.title);
+        formData.append("booking_date", bookingDate);
+        formData.append("number_of_tickets", numberOfTickets);
+        formData.append("showtime", selectedShowtime);
+        formData.append("ticket_price", selectedMovie.ticket_price);
+
+        fetch("php/booking.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            console.log("Response status:", response.status);
+            return response.text();
+          })
+          .then((text) => {
+            console.log("Raw response:", text);
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error("JSON parse error:", e);
+              throw new Error(
+                "Invalid response from server: " + text.substring(0, 100)
+              );
+            }
+          })
+          .then((data) => {
+            console.log("Booking response:", data);
+
+            messageDiv.textContent = data.message;
+            messageDiv.className = data.success
+              ? "message success"
+              : "message error";
+
+            if (data.success) {
+              console.log("Booking successful, showing ticket");
+
+              const bookingData = {
+                name: fullName,
+                email: email,
+                movie: selectedMovie.title,
+                date: bookingDate,
+                showtime: selectedShowtime,
+                tickets: numberOfTickets,
+                ticketPrice: selectedMovie.ticket_price,
+                total:
+                  data.total_amount ||
+                  numberOfTickets * selectedMovie.ticket_price,
+                bookingId: data.booking_id || generateBookingId(),
+              };
+
+              console.log("Ticket data:", bookingData);
+              showTicket(bookingData);
+
+              // Hide form and show action buttons
+              document.getElementById("bookingForm").style.display = "none";
+              document.getElementById("printBtn").style.display =
+                "inline-block";
+              document.getElementById("bookAnotherBtn").style.display =
+                "inline-block";
+            } else {
+              console.error("Booking failed:", data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Booking error:", error);
+            messageDiv.textContent = "Connection error: " + error.message;
+            messageDiv.className = "message error";
+          })
+          .finally(() => {
+            submitBtn.textContent = "🎫 Confirm Booking";
+            submitBtn.disabled = false;
+          });
+      }
+
+      function showTicket(bookingData) {
+        console.log("Showing ticket with data:", bookingData);
+
+        // Populate ticket fields
+        document.getElementById("ticketMovie").textContent = bookingData.movie;
+        document.getElementById("ticketName").textContent = bookingData.name;
+        document.getElementById("ticketEmail").textContent = bookingData.email;
+        document.getElementById("ticketDate").textContent = formatDate(
+          bookingData.date
+        );
+        document.getElementById("ticketShowtime").textContent =
+          bookingData.showtime;
+        document.getElementById("ticketQuantity").textContent =
+          bookingData.tickets;
+        document.getElementById(
+          "ticketPrice"
+        ).textContent = `Rs. ${bookingData.ticketPrice}`;
+        document.getElementById(
+          "ticketTotal"
+        ).textContent = `Rs. ${bookingData.total}`;
+        document.getElementById("ticketBookingId").textContent =
+          bookingData.bookingId;
+
+        // Show the ticket
+        const ticketElement = document.getElementById("ticket");
+        ticketElement.style.display = "block";
+
+        console.log("Ticket element display set to block");
+
+        // Scroll to ticket after a short delay
+        setTimeout(() => {
+          ticketElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          console.log("Scrolled to ticket");
+        }, 500);
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function generateBookingId() {
+        return "SSR" + Date.now().toString().slice(-8);
+      }
+
+      function printTicket() {
+        const ticketElement = document.getElementById("ticket");
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>SSR Cinema Ticket</title>
+              <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .ticket { max-width: 400px; margin: 0 auto; }
+                ${document.querySelector("style").innerHTML}
+              </style>
+            </head>
+            <body>
+              ${ticketElement.outerHTML}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+      }
+
+      function bookAnother() {
+        document.getElementById("bookingForm").reset();
+        document.getElementById("bookingForm").style.display = "block";
+        document.getElementById("ticket").style.display = "none";
+        document.getElementById("printBtn").style.display = "none";
+        document.getElementById("bookAnotherBtn").style.display = "none";
+        document.getElementById("bookingMessage").textContent = "";
+        hideMovieDetails();
+        setMinDate();
+
+        // Reset steps
+        document.getElementById("step1").className = "step active";
+        document.getElementById("step2").className = "step";
+        document.getElementById("step3").className = "step";
+      }
     </script>
   </body>
 </html>

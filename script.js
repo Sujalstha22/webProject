@@ -1,23 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
+  let currentSlide = 0;
   const slider = document.getElementById("slider");
   const slides = document.querySelectorAll(".slide");
   const dots = document.querySelectorAll(".dot");
   const prevBtn = document.querySelector(".prev");
   const nextBtn = document.querySelector(".next");
 
-  let currentSlide = 0;
-  let slideInterval;
   const slideDuration = 3000;
+  let slideInterval;
+
+  // Touch support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
 
   // Load movies and check login status when page loads
   loadNowShowingMovies();
   checkLoginStatus();
 
-  // Initialize slider
+  // Initialize slider with touch support
   function startSlider() {
     if (slides.length > 0) {
       slideInterval = setInterval(nextSlide, slideDuration);
       updateSlider();
+      setupTouchEvents();
+    }
+  }
+
+  function setupTouchEvents() {
+    if (slider) {
+      slider.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
+      slider.addEventListener("touchend", handleTouchEnd, { passive: true });
+    }
+  }
+
+  function handleTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }
+
+  function handleTouchEnd(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }
+
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        nextSlide(); // Swipe left - next slide
+      } else {
+        prevSlide(); // Swipe right - previous slide
+      }
     }
   }
 
@@ -85,7 +121,68 @@ document.addEventListener("DOMContentLoaded", () => {
     signupForm.addEventListener("submit", handleSignup);
     setupFormValidation();
   }
+
+  // Setup responsive behavior
+  setupResponsiveBehavior();
 });
+
+// Mobile Menu Toggle Function
+function toggleMobileMenu() {
+  const navbarItems = document.getElementById("navbarItems");
+  const toggle = document.querySelector(".mobile-menu-toggle");
+
+  navbarItems.classList.toggle("active");
+  toggle.classList.toggle("active");
+
+  // Close menu when clicking on a link
+  const navLinks = navbarItems.querySelectorAll("a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      navbarItems.classList.remove("active");
+      toggle.classList.remove("active");
+    });
+  });
+}
+
+// Setup responsive behavior
+function setupResponsiveBehavior() {
+  // Handle window resize
+  window.addEventListener(
+    "resize",
+    debounce(() => {
+      // Close mobile menu on resize to desktop
+      if (window.innerWidth > 768) {
+        const navbarItems = document.getElementById("navbarItems");
+        const toggle = document.querySelector(".mobile-menu-toggle");
+        navbarItems.classList.remove("active");
+        toggle.classList.remove("active");
+      }
+
+      // Recalculate slider position
+      window.updateSlider(); // Declare the variable before using it
+    }, 250)
+  );
+
+  // Handle orientation change
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      window.updateSlider(); // Declare the variable before using it
+    }, 100);
+  });
+}
+
+// Debounce function for performance
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 // Authentication functionality
 let isAdminMode = false;
@@ -250,9 +347,8 @@ function handleLogin(e) {
         return JSON.parse(text);
       } catch (e) {
         console.error("❌ JSON parse error:", e);
-        throw new Error(
-          "Invalid response from server: " + text.substring(0, 100)
-        );
+        console.error("Raw text:", text);
+        throw new Error("Invalid JSON response from movies API");
       }
     })
     .then((data) => {
@@ -510,6 +606,7 @@ function togglePassword(inputId) {
 
 function openModal(id) {
   document.getElementById(id).style.display = "block";
+  document.body.style.overflow = "hidden"; // Prevent background scrolling
 
   const messageDiv = document.getElementById(id.replace("Modal", "Message"));
   if (messageDiv) {
@@ -528,6 +625,7 @@ function openModal(id) {
 
 function closeModal(id) {
   document.getElementById(id).style.display = "none";
+  document.body.style.overflow = "auto"; // Restore scrolling
 
   const form = document.getElementById(id.replace("Modal", "Form"));
   if (form) {
@@ -640,6 +738,7 @@ window.onclick = (event) => {
   modals.forEach((modal) => {
     if (event.target == modal) {
       modal.style.display = "none";
+      document.body.style.overflow = "auto";
     }
   });
 };
@@ -889,3 +988,22 @@ function showMoviesError(message) {
     `;
   }
 }
+
+// Declare updateSlider globally
+window.updateSlider = function updateSlider() {
+  const slider = document.getElementById("slider");
+  const slides = document.querySelectorAll(".slide");
+  const dots = document.querySelectorAll(".dot");
+
+  if (slider && slides.length > 0) {
+    slider.scrollTo({
+      left: slides[currentSlide].offsetLeft,
+      behavior: "smooth",
+    });
+
+    dots.forEach((dot) => dot.classList.remove("active"));
+    if (dots[currentSlide]) {
+      dots[currentSlide].classList.add("active");
+    }
+  }
+};

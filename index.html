@@ -13,10 +13,18 @@
     />
   </head>
   <body>
-    <!-- Navbar -->
+    <!-- Enhanced Responsive Navbar -->
     <div id="navbar">
-      <img src="image/Logo1.png" alt="Logo" />
-      <div class="navbar-items">
+      <img src="image/Logo1.png" alt="SSR Cinema Logo" />
+
+      <!-- Mobile Menu Toggle -->
+      <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="navbar-items" id="navbarItems">
         <a href="index.html">Home</a>
         <a href="#now-showing">Movies</a>
         <a href="ticketrate.html">Ticket Rate</a>
@@ -24,10 +32,12 @@
         <a href="contact.html">Contact Us</a>
         <a href="admin.html" id="adminNavLink" style="display: none">Admin</a>
       </div>
+
       <div class="navbar-button" id="authButtons">
         <button onclick="openModal('loginModal')">Log in</button>
         <button onclick="openModal('signupModal')">Sign Up</button>
       </div>
+
       <div class="navbar-user" id="userInfo" style="display: none">
         <span id="welcomeMessage"></span>
         <button
@@ -44,7 +54,7 @@
       </div>
     </div>
 
-    <!-- Slider -->
+    <!-- Enhanced Responsive Slider -->
     <section class="container">
       <div class="slider-wrapper">
         <div class="slider" id="slider">
@@ -59,20 +69,68 @@
           </div>
         </div>
         <div class="slider-arrows">
-          <button class="slider-arrow prev">&#10094;</button>
-          <button class="slider-arrow next">&#10095;</button>
+          <button class="slider-arrow prev" aria-label="Previous slide">
+            &#10094;
+          </button>
+          <button class="slider-arrow next" aria-label="Next slide">
+            &#10095;
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Now Showing -->
+    <!-- Enhanced Now Showing Section -->
     <div class="section-header" id="now-showing">
       <h2>Now Showing</h2>
       <div class="loading-spinner" id="moviesLoading">Loading movies...</div>
     </div>
 
     <section class="container-1" id="moviesContainer">
-      <!-- Movies will be loaded dynamically from database -->
+      <!-- Movies will be loaded dynamically -->
+      <div class="movie-container">
+        <div class="movie-img">
+          <img src="image/nowshowing1.jpg" alt="Thunderbolts" />
+        </div>
+        <div class="info">
+          <h4>ThunderBolts*</h4>
+          <p>
+            A Marvel anti-hero team is formed by the government to take on
+            covert missions.
+            <br />
+            <strong>Genre:</strong> Action, Adventure
+          </p>
+        </div>
+      </div>
+
+      <div class="movie-container">
+        <div class="movie-img">
+          <img src="image/nowshowing2.jpg" alt="Kubera" />
+        </div>
+        <div class="info">
+          <h4>Kubera</h4>
+          <p>
+            A mysterious character rises from the underground, drawing attention
+            from law and order.
+            <br />
+            <strong>Genre:</strong> Action, Thriller
+          </p>
+        </div>
+      </div>
+
+      <div class="movie-container">
+        <div class="movie-img">
+          <img src="image/nowshowing3.jpg" alt="Ballerina" />
+        </div>
+        <div class="info">
+          <h4>Ballerina</h4>
+          <p>
+            A young assassin trained under the High Table seeks revenge, from
+            the John Wick universe.
+            <br />
+            <strong>Genre:</strong> Action
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- Movie Details Modal -->
@@ -84,8 +142,6 @@
         </div>
       </div>
     </div>
-
-    <script src="script.js"></script>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
@@ -114,6 +170,7 @@
               type="button"
               class="password-toggle"
               onclick="togglePassword('loginPassword')"
+              aria-label="Toggle password visibility"
             >
               👀
             </button>
@@ -185,6 +242,7 @@
               type="button"
               class="password-toggle"
               onclick="togglePassword('signupPassword')"
+              aria-label="Toggle password visibility"
             >
               👀
             </button>
@@ -201,6 +259,7 @@
               type="button"
               class="password-toggle"
               onclick="togglePassword('signupConfirmPassword')"
+              aria-label="Toggle password visibility"
             >
               👀
             </button>
@@ -217,7 +276,7 @@
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Enhanced Footer -->
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-section about">
@@ -252,5 +311,7 @@
         &copy; 2025 SSR Cinema | Designed by Sujal Shrestha
       </div>
     </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>

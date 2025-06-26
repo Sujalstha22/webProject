@@ -1,55 +1,284 @@
 <?php
-// Database repair script to fix missing columns and setup
+/**
+ * Complete Database Repair and Setup Script
+ * This will fix all database connection issues and setup the cinema system
+ */
+
 header('Content-Type: text/html; charset=utf-8');
+
+// Database configuration
+$host = 'localhost';
+$user = 'root';
+$pass = ''; // Try empty password first, then 'root'
+$dbname = 'ssr_cinema';
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Database Repair - SSR Cinema</title>
+    <title>SSR Cinema - Database Repair</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .success { color: #28a745; background: #d4edda; padding: 10px; border-radius: 5px; margin: 10px 0; color: #155724; }
-        .error { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 5px; margin: 10px 0; color: #721c24; }
-        .info { color: #17a2b8; background: #d1ecf1; padding: 10px; border-radius: 5px; margin: 10px 0; color: #0c5460; }
-        .step { background: #2c2c2c; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        button { background: #fa7e61; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
-        button:hover { background: #e66a4d; }
-        pre { background: #333; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #121212, #1f1f1f);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto;
+            background: #2c2c2c;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            color: #fa7e61;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .success { 
+            color: #155724;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #28a745;
+            font-weight: 500;
+        }
+        .error { 
+            color: #721c24;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #dc3545;
+            font-weight: 500;
+        }
+        .info { 
+            color: #0c5460;
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #17a2b8;
+            font-weight: 500;
+        }
+        .warning {
+            color: #856404;
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #ffc107;
+            font-weight: 500;
+        }
+        .step { 
+            background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 1px solid #444;
+        }
+        .step h3 {
+            color: #fa7e61;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        .btn { 
+            background: linear-gradient(135deg, #fa7e61, #e66a4d);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(250, 126, 97, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #218838);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #00ff00;
+            border: 1px solid #444;
+            font-family: 'Courier New', monospace;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #444;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fa7e61, #e66a4d);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .config-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #444;
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-success {
+            background: #28a745;
+            color: white;
+        }
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+        .status-warning {
+            background: #ffc107;
+            color: #212529;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 SSR Cinema Database Repair</h1>
+        <h1>🔧 SSR Cinema Database Repair Tool</h1>
         
         <?php
+        $repairSteps = [
+            'Testing MySQL Connection',
+            'Creating Database',
+            'Setting Up Tables',
+            'Adding Default Users',
+            'Inserting Sample Movies',
+            'Verifying Setup'
+        ];
+        
+        $currentStep = 0;
+        $totalSteps = count($repairSteps);
+        
         try {
-            // Database connection
-            $host = 'localhost';
-            $user = 'root';
-            $pass = 'root';
-            $dbname = 'ssr_cinema';
+            echo "<div class='info'>🚀 Starting database repair process...</div>";
+            echo "<div class='progress-bar'><div class='progress-fill' id='progressBar'></div></div>";
+            echo "<div id='currentStep'>Step 1 of $totalSteps: {$repairSteps[0]}</div>";
             
-            echo "<div class='step'><h3>Step 1: Connecting to Database</h3>";
+            // Step 1: Test different connection configurations
+            echo "<div class='step'>";
+            echo "<h3>Step 1: Testing MySQL Connection</h3>";
             
-            // Create database if it doesn't exist
-            $pdo_temp = new PDO("mysql:host=$host", $user, $pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            ]);
-            $pdo_temp->exec("CREATE DATABASE IF NOT EXISTS $dbname");
-            echo "<div class='success'>✅ Database '$dbname' created/verified</div>";
+            $connectionConfigs = [
+                ['host' => 'localhost', 'user' => 'root', 'pass' => ''],
+                ['host' => 'localhost', 'user' => 'root', 'pass' => 'root'],
+                ['host' => '127.0.0.1', 'user' => 'root', 'pass' => ''],
+                ['host' => '127.0.0.1', 'user' => 'root', 'pass' => 'root'],
+            ];
             
-            // Connect to the specific database
-            $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
-            echo "<div class='success'>✅ Connected to database successfully</div></div>";
+            $workingConfig = null;
             
-            echo "<div class='step'><h3>Step 2: Creating/Repairing Tables</h3>";
+            foreach ($connectionConfigs as $config) {
+                echo "<div class='info'>🔍 Testing: {$config['host']} with user '{$config['user']}' and password '" . ($config['pass'] ? '***' : 'empty') . "'</div>";
+                
+                try {
+                    $testConn = new mysqli($config['host'], $config['user'], $config['pass']);
+                    if (!$testConn->connect_error) {
+                        $workingConfig = $config;
+                        echo "<div class='success'>✅ Connection successful!</div>";
+                        $testConn->close();
+                        break;
+                    } else {
+                        echo "<div class='warning'>⚠️ Failed: " . $testConn->connect_error . "</div>";
+                    }
+                } catch (Exception $e) {
+                    echo "<div class='warning'>⚠️ Failed: " . $e->getMessage() . "</div>";
+                }
+            }
             
-            // Create users table
-            $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+            if (!$workingConfig) {
+                throw new Exception("Could not establish MySQL connection with any configuration. Please check if MySQL is running.");
+            }
+            
+            // Use working configuration
+            $host = $workingConfig['host'];
+            $user = $workingConfig['user'];
+            $pass = $workingConfig['pass'];
+            
+            echo "</div>";
+            
+            // Step 2: Create database
+            $currentStep++;
+            echo "<script>
+                document.getElementById('progressBar').style.width = '" . ($currentStep/$totalSteps*100) . "%';
+                document.getElementById('currentStep').textContent = 'Step " . ($currentStep+1) . " of $totalSteps: {$repairSteps[$currentStep]}';
+            </script>";
+            
+            echo "<div class='step'>";
+            echo "<h3>Step 2: Creating Database</h3>";
+            
+            $mysqli = new mysqli($host, $user, $pass);
+            if ($mysqli->connect_error) {
+                throw new Exception("Connection failed: " . $mysqli->connect_error);
+            }
+            
+            // Drop and recreate database for clean setup
+            $mysqli->query("DROP DATABASE IF EXISTS `$dbname`");
+            if ($mysqli->query("CREATE DATABASE `$dbname`")) {
+                echo "<div class='success'>✅ Database '$dbname' created successfully</div>";
+            } else {
+                throw new Exception("Error creating database: " . $mysqli->error);
+            }
+            
+            $mysqli->select_db($dbname);
+            echo "<div class='success'>✅ Using database '$dbname'</div>";
+            echo "</div>";
+            
+            // Step 3: Create tables
+            $currentStep++;
+            echo "<script>
+                document.getElementById('progressBar').style.width = '" . ($currentStep/$totalSteps*100) . "%';
+                document.getElementById('currentStep').textContent = 'Step " . ($currentStep+1) . " of $totalSteps: {$repairSteps[$currentStep]}';
+            </script>";
+            
+            echo "<div class='step'>";
+            echo "<h3>Step 3: Setting Up Tables</h3>";
+            
+            // Users table
+            $sql_users = "CREATE TABLE users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 full_name VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
@@ -57,16 +286,16 @@ header('Content-Type: text/html; charset=utf-8');
                 password VARCHAR(255) NOT NULL,
                 is_admin BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )");
-            echo "<div class='success'>✅ Users table created/verified</div>";
+            )";
             
-            // Drop and recreate movies table to ensure all columns exist
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
-            $pdo->exec("DROP TABLE IF EXISTS bookings");
-            $pdo->exec("DROP TABLE IF EXISTS movies");
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+            if ($mysqli->query($sql_users)) {
+                echo "<div class='success'>✅ Users table created</div>";
+            } else {
+                throw new Exception("Error creating users table: " . $mysqli->error);
+            }
             
-            $pdo->exec("CREATE TABLE movies (
+            // Movies table
+            $sql_movies = "CREATE TABLE movies (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(150) NOT NULL,
                 description TEXT,
@@ -84,11 +313,16 @@ header('Content-Type: text/html; charset=utf-8');
                 is_showing BOOLEAN DEFAULT TRUE,
                 is_featured BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )");
-            echo "<div class='success'>✅ Movies table recreated with all columns</div>";
+            )";
             
-            // Create bookings table
-            $pdo->exec("CREATE TABLE IF NOT EXISTS bookings (
+            if ($mysqli->query($sql_movies)) {
+                echo "<div class='success'>✅ Movies table created</div>";
+            } else {
+                throw new Exception("Error creating movies table: " . $mysqli->error);
+            }
+            
+            // Bookings table
+            $sql_bookings = "CREATE TABLE bookings (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 full_name VARCHAR(100) NOT NULL,
                 email VARCHAR(100) NOT NULL,
@@ -100,40 +334,84 @@ header('Content-Type: text/html; charset=utf-8');
                 booking_status ENUM('confirmed', 'cancelled') DEFAULT 'confirmed',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE SET NULL
-            )");
-            echo "<div class='success'>✅ Bookings table created/verified</div>";
+            )";
             
-            // Create user sessions table
-            $pdo->exec("CREATE TABLE IF NOT EXISTS user_sessions (
+            if ($mysqli->query($sql_bookings)) {
+                echo "<div class='success'>✅ Bookings table created</div>";
+            } else {
+                throw new Exception("Error creating bookings table: " . $mysqli->error);
+            }
+            
+            // User sessions table
+            $sql_sessions = "CREATE TABLE user_sessions (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 session_id VARCHAR(128) NOT NULL,
                 expires_at TIMESTAMP NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            )");
-            echo "<div class='success'>✅ User sessions table created/verified</div></div>";
+            )";
             
-            echo "<div class='step'><h3>Step 3: Creating Default Users</h3>";
+            if ($mysqli->query($sql_sessions)) {
+                echo "<div class='success'>✅ User sessions table created</div>";
+            } else {
+                throw new Exception("Error creating user sessions table: " . $mysqli->error);
+            }
             
-            // Insert admin user
-            $adminPassword = password_hash('admin123', PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT IGNORE INTO users (full_name, email, username, password, is_admin) VALUES (?, ?, ?, ?, 1)");
-            $stmt->execute(['Admin User', 'admin@ssrcinema.com', 'admin', $adminPassword]);
-            echo "<div class='success'>✅ Admin user created (admin/admin123)</div>";
+            echo "</div>";
             
-            // Insert test user
-            $testPassword = password_hash('test123', PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT IGNORE INTO users (full_name, email, username, password, is_admin) VALUES (?, ?, ?, ?, 0)");
-            $stmt->execute(['Test User', 'test@example.com', 'testuser', $testPassword]);
-            echo "<div class='success'>✅ Test user created (testuser/test123)</div></div>";
+            // Step 4: Add default users
+            $currentStep++;
+            echo "<script>
+                document.getElementById('progressBar').style.width = '" . ($currentStep/$totalSteps*100) . "%';
+                document.getElementById('currentStep').textContent = 'Step " . ($currentStep+1) . " of $totalSteps: {$repairSteps[$currentStep]}';
+            </script>";
             
-            echo "<div class='step'><h3>Step 4: Adding Sample Movies</h3>";
+            echo "<div class='step'>";
+            echo "<h3>Step 4: Adding Default Users</h3>";
             
-            // Clear existing movies
-            $pdo->exec("DELETE FROM movies");
+            // Admin user
+            $admin_password = password_hash('admin123', PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, username, password, is_admin) VALUES (?, ?, ?, ?, 1)");
+            $admin_name = 'Admin User';
+            $admin_email = 'admin@ssrcinema.com';
+            $admin_username = 'admin';
+            $stmt->bind_param("ssss", $admin_name, $admin_email, $admin_username, $admin_password);
             
-            // Insert sample movies
+            if ($stmt->execute()) {
+                echo "<div class='success'>✅ Admin user created (username: admin, password: admin123)</div>";
+            } else {
+                throw new Exception("Error creating admin user: " . $mysqli->error);
+            }
+            $stmt->close();
+            
+            // Test user
+            $test_password = password_hash('test123', PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, username, password, is_admin) VALUES (?, ?, ?, ?, 0)");
+            $test_name = 'Test User';
+            $test_email = 'test@example.com';
+            $test_username = 'testuser';
+            $stmt->bind_param("ssss", $test_name, $test_email, $test_username, $test_password);
+            
+            if ($stmt->execute()) {
+                echo "<div class='success'>✅ Test user created (username: testuser, password: test123)</div>";
+            } else {
+                throw new Exception("Error creating test user: " . $mysqli->error);
+            }
+            $stmt->close();
+            
+            echo "</div>";
+            
+            // Step 5: Insert sample movies
+            $currentStep++;
+            echo "<script>
+                document.getElementById('progressBar').style.width = '" . ($currentStep/$totalSteps*100) . "%';
+                document.getElementById('currentStep').textContent = 'Step " . ($currentStep+1) . " of $totalSteps: {$repairSteps[$currentStep]}';
+            </script>";
+            
+            echo "<div class='step'>";
+            echo "<h3>Step 5: Inserting Sample Movies</h3>";
+            
             $movies = [
                 [
                     'title' => 'Avengers: Endgame',
@@ -188,69 +466,86 @@ header('Content-Type: text/html; charset=utf-8');
                 ]
             ];
             
-            $stmt = $pdo->prepare("INSERT INTO movies (title, description, genre, director, cast, duration, rating, release_date, language, image_url, trailer_url, ticket_price, show_times, is_showing, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $mysqli->prepare("INSERT INTO movies (title, description, genre, director, cast, duration, rating, release_date, language, image_url, trailer_url, ticket_price, show_times, is_showing, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             foreach ($movies as $movie) {
-                $stmt->execute([
+                $stmt->bind_param("sssssississsdii", 
                     $movie['title'], $movie['description'], $movie['genre'], $movie['director'], 
                     $movie['cast'], $movie['duration'], $movie['rating'], $movie['release_date'], 
                     $movie['language'], $movie['image_url'], $movie['trailer_url'], 
                     $movie['ticket_price'], $movie['show_times'], $movie['is_showing'], $movie['is_featured']
-                ]);
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception("Error inserting movie '{$movie['title']}': " . $mysqli->error);
+                }
             }
+            $stmt->close();
             
-            echo "<div class='success'>✅ " . count($movies) . " sample movies added</div></div>";
+            echo "<div class='success'>✅ " . count($movies) . " sample movies added successfully</div>";
+            echo "</div>";
             
-            echo "<div class='step'><h3>Step 5: Verification</h3>";
+            // Step 6: Verification
+            $currentStep++;
+            echo "<script>
+                document.getElementById('progressBar').style.width = '100%';
+                document.getElementById('currentStep').textContent = 'Step $totalSteps of $totalSteps: {$repairSteps[$currentStep-1]} - Complete!';
+            </script>";
             
-            // Verify tables and data
-            $stmt = $pdo->query("SELECT COUNT(*) as count FROM users");
-            $userCount = $stmt->fetch()['count'];
+            echo "<div class='step'>";
+            echo "<h3>Step 6: Verifying Setup</h3>";
+            
+            // Verify data
+            $result = $mysqli->query("SELECT COUNT(*) as count FROM users");
+            $userCount = $result->fetch_assoc()['count'];
             echo "<div class='info'>👥 Users in database: $userCount</div>";
             
-            $stmt = $pdo->query("SELECT COUNT(*) as count FROM movies WHERE is_showing = 1");
-            $movieCount = $stmt->fetch()['count'];
+            $result = $mysqli->query("SELECT COUNT(*) as count FROM movies WHERE is_showing = 1");
+            $movieCount = $result->fetch_assoc()['count'];
             echo "<div class='info'>🎬 Movies showing: $movieCount</div>";
             
-            // Test the movies API
-            echo "<div class='info'>🧪 Testing movies API...</div>";
-            $testUrl = 'php/movies.php?action=test';
-            $context = stream_context_create(['http' => ['timeout' => 5]]);
-            $testResult = @file_get_contents($testUrl, false, $context);
-            if ($testResult) {
-                $testData = json_decode($testResult, true);
-                if ($testData && $testData['success']) {
-                    echo "<div class='success'>✅ Movies API is working</div>";
-                } else {
-                    echo "<div class='error'>❌ Movies API test failed</div>";
-                }
-            } else {
-                echo "<div class='error'>❌ Could not reach movies API</div>";
+            $result = $mysqli->query("SELECT COUNT(*) as count FROM bookings");
+            $bookingCount = $result->fetch_assoc()['count'];
+            echo "<div class='info'>🎟️ Bookings: $bookingCount</div>";
+            
+            // Show table structure
+            echo "<h4>📋 Database Tables Created:</h4>";
+            $result = $mysqli->query("SHOW TABLES");
+            echo "<pre>";
+            while ($row = $result->fetch_array()) {
+                echo "✅ " . $row[0] . "\n";
             }
+            echo "</pre>";
             
             echo "</div>";
             
-            echo "<div style='background: #28a745; color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;'>";
-            echo "<h2>🎉 Database Repair Complete!</h2>";
-            echo "<p><strong>Admin Login:</strong> username: <code>admin</code> | password: <code>admin123</code></p>";
-            echo "<p><strong>Test User:</strong> username: <code>testuser</code> | password: <code>test123</code></p>";
-            echo "<p><strong>Movies:</strong> $movieCount movies are now available</p>";
-            echo "</div>";
-            
-        } catch (Exception $e) {
-            echo "<div class='error'>";
-            echo "<h3>❌ Repair Failed</h3>";
-            echo "<p><strong>Error:</strong> " . $e->getMessage() . "</p>";
-            echo "<p><strong>File:</strong> " . $e->getFile() . "</p>";
-            echo "<p><strong>Line:</strong> " . $e->getLine() . "</p>";
-            echo "</div>";
-        }
-        ?>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="index.html" style="background: #fa7e61; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px;">🏠 Go to Homepage</a>
-            <a href="php/movies.php?action=test" target="_blank" style="background: #17a2b8; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; margin-left: 10px;">🧪 Test Movies API</a>
-        </div>
-    </div>
-</body>
-</html>
+            // Create updated config file
+            $configContent = "<?php
+/**
+ * SSR Cinema Database Configuration - Auto-generated
+ * Generated on: " . date('Y-m-d H:i:s') . "
+ */
+
+// Database configuration
+define('DB_HOST', '$host');
+define('DB_USER', '$user');
+define('DB_PASS', '$pass');
+define('DB_NAME', '$dbname');
+
+class Database {
+    private static \$connection = null;
+    private static \$pdo = null;
+    
+    public static function connect() {
+        if (self::\$connection === null) {
+            try {
+                // Create database if it doesn't exist
+                \$mysqli_temp = new mysqli(DB_HOST, DB_USER, DB_PASS);
+                if (\$mysqli_temp->connect_error) {
+                    throw new Exception('Connection failed: ' . \$mysqli_temp->connect_error);
+                }
+                \$mysqli_temp->query('CREATE DATABASE IF NOT EXISTS `' . DB_NAME . '`');
+                \$mysqli_temp->close();
+                
+                // Connect to the specific database
+                self::\$connectio
